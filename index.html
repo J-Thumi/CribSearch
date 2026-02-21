@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CribSearch — Hunt Smarter. Live Better.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1F3A5F",
+            accent: "#2D7FF9",
+            bg: "#F5F7FA",
+            success: "#22C55E",
+            danger: "#EF4444",
+            warning: "#F59E0B",
+            premium: "#C8A951"
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Roboto', sans-serif; }
+    .map-bg {
+      background-image: url('https://images.unsplash.com/photo-1502920917128-1aa500764cbd?q=80&w=1600&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="bg-bg text-gray-800">  <!-- NAVBAR -->  <header class="bg-white shadow-sm fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-primary rounded-lg"></div>
+        <span class="text-xl font-semibold text-primary">CribSearch</span>
+      </div>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="#" class="hover:text-accent">Buy</a>
+        <a href="#" class="hover:text-accent">Rent</a>
+        <a href="#" class="hover:text-accent">Invest</a>
+        <a href="#" class="hover:text-accent">Agents</a>
+        <a href="#" class="hover:text-accent">Pricing</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <button class="hidden sm:inline px-4 py-2 text-sm font-medium text-primary">Sign in</button>
+        <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium shadow">Get Started</button>
+      </div>
+    </div>
+  </header>  <!-- HERO MAP SECTION -->  <section class="map-bg h-screen flex items-center justify-center relative pt-20">
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div class="relative z-10 max-w-3xl text-center text-white px-6">
+      <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
+        Hunt Smarter. Live Better.
+      </h1>
+      <p class="text-lg md:text-xl opacity-90 mb-8">
+        Explore properties from above with immersive aerial maps, real‑time availability, and powerful investment insights.
+      </p><!-- SEARCH BAR -->
+  <div class="bg-white rounded-2xl shadow-lg p-4 flex flex-col md:flex-row gap-3">
+    <input type="text" placeholder="Search by city, neighborhood, or address"
+      class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent text-gray-800" />
+    <button class="px-6 py-3 bg-accent text-white rounded-lg font-medium">
+      Search Map
+    </button>
+  </div>
+</div>
+
+  </section>  <!-- FEATURES -->  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-primary mb-3">A Smarter Way to Discover Property</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          CribSearch combines aerial exploration, real‑time availability, and intelligent analytics to help you find the right home or investment faster.
+        </p>
+      </div><div class="grid md:grid-cols-3 gap-10">
+    <div class="p-6 rounded-2xl bg-bg">
+      <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+        <span class="text-accent font-bold">🗺️</span>
+      </div>
+      <h3 class="font-semibold text-lg mb-2">Map‑First Discovery</h3>
+      <p class="text-gray-600 text-sm">
+        Explore neighborhoods visually with satellite views, smart clustering, and live property markers.
+      </p>
+    </div>
+
+    <div class="p-6 rounded-2xl bg-bg">
+      <div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-4">
+        <span class="text-success font-bold">📊</span>
+      </div>
+      <h3 class="font-semibold text-lg mb-2">Investment Insights</h3>
+      <p class="text-gray-600 text-sm">
+        Analyze yields, trends, and growth forecasts with advanced investor tools and overlays.
+      </p>
+    </div>
+
+    <div class="p-6 rounded-2xl bg-bg">
+      <div class="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center mb-4">
+        <span class="text-warning font-bold">⚡</span>
+      </div>
+      <h3 class="font-semibold text-lg mb-2">Real‑Time Availability</h3>
+      <p class="text-gray-600 text-sm">
+        Instantly see which homes are available, pending, or occupied with color‑coded markers.
+      </p>
+    </div>
+  </div>
+</div>
+
+  </section>  <!-- PREMIUM SECTION -->  <section class="py-20 bg-bg">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-14 items-center">
+      <div>
+        <h2 class="text-3xl font-bold text-primary mb-4">Unlock Premium Exploration</h2>
+        <p class="text-gray-600 mb-6">
+          Access advanced filters, market analytics, early listings, and powerful investor dashboards designed for serious buyers and professionals.
+        </p>
+        <ul class="space-y-3 text-gray-700">
+          <li>✔ Unlimited property views</li>
+          <li>✔ Advanced map overlays</li>
+          <li>✔ AI recommendations</li>
+          <li>✔ Investment analytics</li>
+        </ul>
+        <button class="mt-8 px-6 py-3 rounded-lg bg-primary text-white font-medium">
+          View Plans
+        </button>
+      </div><div class="bg-white rounded-2xl shadow-lg p-8">
+    <div class="flex items-center justify-between mb-4">
+      <span class="font-semibold text-primary">Investor Pro</span>
+      <span class="px-3 py-1 rounded-full text-xs bg-premium/20 text-premium font-medium">Premium</span>
+    </div>
+    <p class="text-3xl font-bold text-primary mb-6">$19<span class="text-sm font-normal text-gray-500">/mo</span></p>
+    <ul class="space-y-3 text-sm text-gray-600 mb-6">
+      <li>Rental yield analytics</li>
+      <li>Area appreciation forecasts</li>
+      <li>Portfolio tracker</li>
+      <li>Downloadable reports</li>
+    </ul>
+    <button class="w-full py-3 rounded-lg bg-accent text-white font-medium">Start Free Trial</button>
+  </div>
+</div>
+
+  </section>  <!-- CTA -->  <section class="py-20 bg-primary text-white text-center">
+    <div class="max-w-3xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Start Exploring Smarter Today</h2>
+      <p class="opacity-90 mb-8">
+        Join thousands of buyers, renters, and investors discovering property through immersive aerial search.
+      </p>
+      <button class="px-8 py-4 bg-accent rounded-xl font-semibold">
+        Launch Map
+      </button>
+    </div>
+  </section>  <!-- FOOTER -->  <footer class="bg-white border-t">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-8 text-sm">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-primary rounded"></div>
+          <span class="font-semibold text-primary">CribSearch</span>
+        </div>
+        <p class="text-gray-600">A next‑generation map‑first property discovery platform.</p>
+      </div>
+      <div>
+        <p class="font-semibold mb-3">Platform</p>
+        <ul class="space-y-2 text-gray-600">
+          <li>Search</li>
+          <li>Maps</li>
+          <li>Pricing</li>
+          <li>Agents</li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-semibold mb-3">Company</p>
+        <ul class="space-y-2 text-gray-600">
+          <li>About</li>
+          <li>Careers</li>
+          <li>Blog</li>
+          <li>Contact</li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-semibold mb-3">Legal</p>
+        <ul class="space-y-2 text-gray-600">
+          <li>Privacy</li>
+          <li>Terms</li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center text-gray-500 text-xs pb-6">© 2026 CribSearch. All rights reserved.</div>
+  </footer></body>
+</html>
