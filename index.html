@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,180 +11,207 @@
       theme: {
         extend: {
           colors: {
-            primary: "#1F3A5F",
-            accent: "#2D7FF9",
-            bg: "#F5F7FA",
-            success: "#22C55E",
-            danger: "#EF4444",
-            warning: "#F59E0B",
-            premium: "#C8A951"
+            primary: "#b08d57", 
+            accent: "#e74c3c", 
+            bg: "#f5f5f5", 
+            premium: "#c0392b",
+            success: "#27ae60", // Green for Vacant [cite: 43]
+            danger: "#e74c3c",  // Red for Occupied [cite: 44]
+            warning: "#f1c40f", // Yellow for Pending [cite: 45]
+            actionable: "#3498db", // Blue for UI elements [cite: 86]
+            dark: "#000000"
+          },
+          fontFamily: {
+            sans: ['Roboto', 'sans-serif'], // Required typography [cite: 87]
           }
         }
       }
     }
-  </script>
+</script>
   <style>
-    body { font-family: 'Roboto', sans-serif; }
-    .map-bg {
-      background-image: url('https://images.unsplash.com/photo-1502920917128-1aa500764cbd?q=80&w=1600&auto=format&fit=crop');
+    .map-hero {
+      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('bg.png');
       background-size: cover;
       background-position: center;
     }
+    /* Marker Animation from Brief [cite: 141] */
+    .animated-pin {
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
   </style>
 </head>
-<body class="bg-bg text-gray-800">  <!-- NAVBAR -->  <header class="bg-white shadow-sm fixed w-full z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+<body class="bg-bg text-gray-800 antialiased">
+
+  <header class="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <div class="w-9 h-9 bg-primary rounded-lg"></div>
-        <span class="text-xl font-semibold text-primary">CribSearch</span>
+        <img src="generated_logoo-removebg-preview.png" width="100" height="100" style="border-radius:50%;">
+        <span class="text-2xl font-bold tracking-tight text-primary">CribSearch</span>
       </div>
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
-        <a href="#" class="hover:text-accent">Buy</a>
-        <a href="#" class="hover:text-accent">Rent</a>
-        <a href="#" class="hover:text-accent">Invest</a>
-        <a href="#" class="hover:text-accent">Agents</a>
-        <a href="#" class="hover:text-accent">Pricing</a>
+      <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold uppercase tracking-wider">
+        <a href="#features" class="hover:text-accent transition">Discovery</a>
+        <a href="#pricing" class="hover:text-accent transition">Premium</a>
+        <a href="#" class="hover:text-accent transition">Partners</a>
       </nav>
-      <div class="flex items-center gap-3">
-        <button class="hidden sm:inline px-4 py-2 text-sm font-medium text-primary">Sign in</button>
-        <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium shadow">Get Started</button>
+      <div class="flex items-center gap-4">
+        <button class="text-sm font-bold text-gray-600 hover:text-primary transition">Agent Login</button>
+        <button class="px-5 py-2.5 rounded-full bg-actionable text-white text-sm font-bold shadow-lg hover:bg-blue-600 transition">Explore Map</button>
       </div>
     </div>
-  </header>  <!-- HERO MAP SECTION -->  <section class="map-bg h-screen flex items-center justify-center relative pt-20">
-    <div class="absolute inset-0 bg-black/30"></div>
-    <div class="relative z-10 max-w-3xl text-center text-white px-6">
-      <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
-        Hunt Smarter. Live Better.
-      </h1>
-      <p class="text-lg md:text-xl opacity-90 mb-8">
-        Explore properties from above with immersive aerial maps, real‑time availability, and powerful investment insights.
-      </p><!-- SEARCH BAR -->
-  <div class="bg-white rounded-2xl shadow-lg p-4 flex flex-col md:flex-row gap-3">
-    <input type="text" placeholder="Search by city, neighborhood, or address"
-      class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent text-gray-800" />
-    <button class="px-6 py-3 bg-accent text-white rounded-lg font-medium">
-      Search Map
-    </button>
-  </div>
-</div>
+  </header>
 
-  </section>  <!-- FEATURES -->  <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-14">
-        <h2 class="text-3xl font-bold text-primary mb-3">A Smarter Way to Discover Property</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">
-          CribSearch combines aerial exploration, real‑time availability, and intelligent analytics to help you find the right home or investment faster.
-        </p>
-      </div><div class="grid md:grid-cols-3 gap-10">
-    <div class="p-6 rounded-2xl bg-bg">
-      <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
-        <span class="text-accent font-bold">🗺️</span>
-      </div>
-      <h3 class="font-semibold text-lg mb-2">Map‑First Discovery</h3>
-      <p class="text-gray-600 text-sm">
-        Explore neighborhoods visually with satellite views, smart clustering, and live property markers.
+  <section class="map-hero h-screen flex items-center justify-center relative px-6">
+    <div class="max-w-4xl w-full text-center text-white">
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">Hunt Smarter.<br>Live Better.</h1>
+      <p class="text-xl md:text-2xl mb-10 opacity-95 max-w-2xl mx-auto font-light">
+        The next-generation aerial exploration engine for real estate discovery.
       </p>
-    </div>
 
-    <div class="p-6 rounded-2xl bg-bg">
-      <div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-4">
-        <span class="text-success font-bold">📊</span>
-      </div>
-      <h3 class="font-semibold text-lg mb-2">Investment Insights</h3>
-      <p class="text-gray-600 text-sm">
-        Analyze yields, trends, and growth forecasts with advanced investor tools and overlays.
-      </p>
-    </div>
-
-    <div class="p-6 rounded-2xl bg-bg">
-      <div class="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center mb-4">
-        <span class="text-warning font-bold">⚡</span>
-      </div>
-      <h3 class="font-semibold text-lg mb-2">Real‑Time Availability</h3>
-      <p class="text-gray-600 text-sm">
-        Instantly see which homes are available, pending, or occupied with color‑coded markers.
-      </p>
-    </div>
-  </div>
-</div>
-
-  </section>  <!-- PREMIUM SECTION -->  <section class="py-20 bg-bg">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-14 items-center">
-      <div>
-        <h2 class="text-3xl font-bold text-primary mb-4">Unlock Premium Exploration</h2>
-        <p class="text-gray-600 mb-6">
-          Access advanced filters, market analytics, early listings, and powerful investor dashboards designed for serious buyers and professionals.
-        </p>
-        <ul class="space-y-3 text-gray-700">
-          <li>✔ Unlimited property views</li>
-          <li>✔ Advanced map overlays</li>
-          <li>✔ AI recommendations</li>
-          <li>✔ Investment analytics</li>
-        </ul>
-        <button class="mt-8 px-6 py-3 rounded-lg bg-primary text-white font-medium">
-          View Plans
-        </button>
-      </div><div class="bg-white rounded-2xl shadow-lg p-8">
-    <div class="flex items-center justify-between mb-4">
-      <span class="font-semibold text-primary">Investor Pro</span>
-      <span class="px-3 py-1 rounded-full text-xs bg-premium/20 text-premium font-medium">Premium</span>
-    </div>
-    <p class="text-3xl font-bold text-primary mb-6">$19<span class="text-sm font-normal text-gray-500">/mo</span></p>
-    <ul class="space-y-3 text-sm text-gray-600 mb-6">
-      <li>Rental yield analytics</li>
-      <li>Area appreciation forecasts</li>
-      <li>Portfolio tracker</li>
-      <li>Downloadable reports</li>
-    </ul>
-    <button class="w-full py-3 rounded-lg bg-accent text-white font-medium">Start Free Trial</button>
-  </div>
-</div>
-
-  </section>  <!-- CTA -->  <section class="py-20 bg-primary text-white text-center">
-    <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-bold mb-4">Start Exploring Smarter Today</h2>
-      <p class="opacity-90 mb-8">
-        Join thousands of buyers, renters, and investors discovering property through immersive aerial search.
-      </p>
-      <button class="px-8 py-4 bg-accent rounded-xl font-semibold">
-        Launch Map
-      </button>
-    </div>
-  </section>  <!-- FOOTER -->  <footer class="bg-white border-t">
-    <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-8 text-sm">
-      <div>
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-8 h-8 bg-primary rounded"></div>
-          <span class="font-semibold text-primary">CribSearch</span>
+      <div class="bg-white p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 max-w-3xl mx-auto">
+        <div class="flex-1 flex items-center px-4">
+          <span class="text-gray-400 mr-2">📍</span>
+          <input type="text" placeholder="Search city, estate, or ZIP code..." class="w-full py-4 focus:outline-none text-gray-800 font-medium">
         </div>
-        <p class="text-gray-600">A next‑generation map‑first property discovery platform.</p>
+        <button class="bg-accent hover:bg-red-600 px-8 py-4 rounded-xl font-bold text-white transition-all">
+          Start Aerial Scouting
+        </button>
+      </div>
+
+      <div class="mt-8 flex justify-center gap-6 text-sm font-medium">
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-success"></span> Available</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-danger"></span> Occupied</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-warning"></span> Pending</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
+        <div>
+          <h2 class="text-primary text-sm font-bold uppercase tracking-widest mb-3">Immersive Tech</h2>
+          <h3 class="text-4xl font-bold mb-6 text-gray-900 leading-tight">Aerial Discovery & 3D Mapping</h3>
+          <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+            Move beyond static lists. Visually scout neighborhoods using a satellite-based, interactive interface with smooth 3D tilting and real-time property markers.
+          </p>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div class="flex gap-4">
+              <!-- <div class="text-2xl">🏙️</div> -->
+              <div>
+                <h4 class="font-bold">Street-Level View</h4>
+                <p class="text-sm text-gray-500">Integrated API for ground exploration.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <!-- <div class="text-2xl">🔥</div> -->
+              <div>
+                <h4 class="font-bold">Heatmaps</h4>
+                <p class="text-sm text-gray-500">Crime and infrastructure data overlays.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-bg rounded-3xl p-8 border border-gray-100 shadow-inner">
+           <div class="bg-white rounded-xl shadow-lg p-6 max-w-xs mx-auto relative animated-pin">
+              <div class="h-32 bg-gray-200 rounded-lg mb-4 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=400" alt="Property">
+              </div>
+              <h5 class="font-bold text-lg">$450,000</h5>
+              <p class="text-xs text-gray-400 mb-2">3 Bed • 2 Bath • 2,400 sqft</p>
+              <div class="flex justify-between items-center">
+                <span class="text-xs px-2 py-1 bg-success/10 text-success font-bold rounded">AVAILABLE</span>
+                <button class="text-actionable text-xs font-bold">View Details →</button>
+              </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="py-24 bg-gray-50 border-y border-gray-200">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Choose Your Strategy</h2>
+        <p class="text-gray-500">From casual browsing to professional institutional investing.</p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+          <h4 class="font-bold text-xl mb-2">Guest</h4>
+          <div class="text-4xl font-bold mb-6">$0<span class="text-sm text-gray-400 font-normal">/forever</span></div>
+          <ul class="space-y-4 mb-8 flex-1 text-sm">
+            <li class="flex items-center gap-3"> Basic Aerial Map </li>
+            <li class="flex items-center gap-3"> Limited Alerts </li>
+            <li class="flex items-center gap-3"> Ads Displayed </li>
+          </ul>
+          <button class="w-full py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition">Get Started</button>
+        </div>
+
+        <div class="bg-primary p-8 rounded-3xl shadow-xl text-white transform scale-105 flex flex-col relative overflow-hidden">
+          <div class="absolute top-4 right-4 bg-accent px-3 py-1 rounded-full text-xs font-bold">POPULAR</div>
+          <h4 class="font-bold text-xl mb-2 text-white/90">Investor Pro</h4>
+          <div class="text-4xl font-bold mb-6">$49<span class="text-sm text-white/60 font-normal">/mo</span></div>
+          <ul class="space-y-4 mb-8 flex-1 text-sm text-white/90">
+            <li class="flex items-center gap-3"> Rental Yield Calculator</li>
+            <li class="flex items-center gap-3"> Area Appreciation Forecasts</li>
+            <li class="flex items-center gap-3">Early Access Listings</li>
+            <li class="flex items-center gap-3">Historical Price Trends</li>
+          </ul>
+          <button class="w-full py-4 bg-white text-primary font-bold rounded-xl shadow-lg hover:bg-gray-100 transition">Start 14-Day Trial</button>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+          <h4 class="font-bold text-xl mb-2">Agent Pro</h4>
+          <div class="text-4xl font-bold mb-6">$99<span class="text-sm text-gray-400 font-normal">/mo</span></div>
+          <ul class="space-y-4 mb-8 flex-1 text-sm">
+            <li class="flex items-center gap-3"> Priority Marker Placement</li>
+            <li class="flex items-center gap-3"> Animated Featured Pins</li>
+            <li class="flex items-center gap-3">Lead Management CRM</li>
+          </ul>
+          <button class="w-full py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition">Partner With Us</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-dark text-white py-20 px-6">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+      <div class="col-span-2">
+        <h2 class="text-3xl font-bold mb-6 text-primary">CribSearch</h2>
+        <p class="text-gray-400 max-w-sm mb-6">
+          Transforming property search into an immersive aerial experience. Reduce unnecessary physical visits and accelerate your decision-making.
+        </p>
+        <div class="flex gap-4">
+          <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">🍎</div>
+          <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">🤖</div>
+        </div>
       </div>
       <div>
-        <p class="font-semibold mb-3">Platform</p>
-        <ul class="space-y-2 text-gray-600">
-          <li>Search</li>
-          <li>Maps</li>
-          <li>Pricing</li>
-          <li>Agents</li>
+        <h4 class="font-bold mb-6">Technical Stack</h4>
+        <ul class="text-gray-500 space-y-3 text-sm">
+          <li>React / React Native</li>
+          <li>WebSocket Real-time</li>
+          <li>Google Maps / OSM API</li>
+          <li>Stripe Payments</li>
         </ul>
       </div>
       <div>
-        <p class="font-semibold mb-3">Company</p>
-        <ul class="space-y-2 text-gray-600">
-          <li>About</li>
-          <li>Careers</li>
-          <li>Blog</li>
-          <li>Contact</li>
-        </ul>
-      </div>
-      <div>
-        <p class="font-semibold mb-3">Legal</p>
-        <ul class="space-y-2 text-gray-600">
-          <li>Privacy</li>
-          <li>Terms</li>
+        <h4 class="font-bold mb-6">Compliance</h4>
+        <ul class="text-gray-500 space-y-3 text-sm">
+          <li>GDPR Compliant</li>
+          <li>Role-based Security</li>
+          <li>Anti-Spoofing</li>
         </ul>
       </div>
     </div>
-    <div class="text-center text-gray-500 text-xs pb-6">© 2026 CribSearch. All rights reserved.</div>
-  </footer></body>
+    <div class="max-w-7xl mx-auto border-t border-white/10 mt-16 pt-8 text-center text-xs text-gray-600">
+      © 2026 CribSearch. Developed as a high-fidelity prop-tech solution.
+    </div>
+  </footer>
+
+</body>
 </html>
