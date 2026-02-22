@@ -33,7 +33,7 @@
           fill="red"/>
     <circle cx="250" cy="124" r="8" fill="black"/>
     <!-- Text: CribSearch -->
-    <text x="140" y="250" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#000">
+    <text x="140" y="250" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#b08d57">
         Crib<tspan fill="#e74c3c">Search</tspan>
     </text>
 
