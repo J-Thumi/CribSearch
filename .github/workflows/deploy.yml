@@ -28,5 +28,5 @@ jobs:
       - name: Deploy to CapRover
         run: |
           npm install -g caprover
-          caprover login --caprover-url https://YOUR_CAPROVER_DOMAIN --password ${{ secrets.CAPROVER_PASSWORD }}
-          caprover deploy --appName laravel-app --branch main
+          caprover login --caprover-url http://77.237.240.70 --password ${{ secrets.CAPROVER_PASSWORD }}
+          caprover deploy --appName cribsearch --branch main
