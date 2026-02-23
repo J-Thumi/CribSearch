@@ -1,5 +1,5 @@
 # Dockerfile for Laravel
-FROM php:8.2-fpm
+FROM php:8.5-fpm
 
 # Set working directory
 WORKDIR /var/www/html
