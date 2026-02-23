@@ -1,0 +1,32 @@
+name: Deploy Laravel to CapRover
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node & NPM (optional if building front-end)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Composer
+        run: |
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+      - name: Install Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Deploy to CapRover
+        run: |
+          npm install -g caprover
+          caprover login --caprover-url https://YOUR_CAPROVER_DOMAIN --password ${{ secrets.CAPROVER_PASSWORD }}
+          caprover deploy --appName laravel-app --branch main
