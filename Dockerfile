@@ -60,14 +60,6 @@ RUN php artisan storage:link && \
     chown -R www-data:www-data public && \
     chmod -R 777 bootstrap
 
-# Database configuration arguments
-ARG DB_CONNECTION
-ARG DB_HOST
-ARG DB_PORT
-ARG DB_DATABASE
-ARG DB_USERNAME
-ARG DB_PASSWORD
-
 EXPOSE 80
 
 # Create necessary directories for logging and ensure proper permissions
@@ -77,7 +69,4 @@ RUN mkdir -p /var/log/supervisor && \
     chmod 755 /var/log/supervisor && \
     chown application:application /tmp
 
-RUN php artisan migrate  
-# Start base services via webdevops entrypoint (expects a command)
-# Run supervisord which manages nginx, php-fpm, our queue workers, and cron
-CMD ["supervisord"]
+CMD ["/bin/bash", "-c", "php artisan migrate --force && supervisord"]
