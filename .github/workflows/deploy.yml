@@ -47,6 +47,8 @@ jobs:
 
       - name: Deploy to CapRover
         run: |
-          npm install -g caprover
-          caprover login --caprover-url http://77.237.240.70 --password ${{ secrets.CAPROVER_PASSWORD }}
-          caprover deploy --appName cribsearch --branch main
+          caprover deploy \
+            --caproverUrl http://77.237.240.70 \
+            --appName cribsearch \
+            --branch main \
+            --deployToken ${{ secrets.CAPROVER_DEPLOY_TOKEN }}
