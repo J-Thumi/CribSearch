@@ -55,4 +55,3 @@ jobs:
           password: '${{ secrets.CAPROVER_PASSWORD }}'
           appName: '${{ secrets.APP_NAME }}'
           image: 'j-thumi/cribsearch:latest'
-          # image: '${{ secrets. }}${{ github.sha }}'
