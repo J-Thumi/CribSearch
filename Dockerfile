@@ -75,12 +75,12 @@ RUN php artisan storage:link && \
 # COPY docker-configs/supervisord.conf /opt/docker/etc/supervisor.d/laravel.conf
 
 # Database configuration arguments
-# ARG DB_CONNECTION
-# ARG DB_HOST
-# ARG DB_PORT
-# ARG DB_DATABASE
-# ARG DB_USERNAME
-# ARG DB_PASSWORD
+ARG DB_CONNECTION
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_DATABASE
+ARG DB_USERNAME
+ARG DB_PASSWORD
 
 EXPOSE 80
 
