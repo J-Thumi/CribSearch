@@ -45,18 +45,14 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-      - name: Deploy to CapRover
-        run: |
-          npm install -g caprover
-          # Create stable tar (exclude volatile folders)
-          # tar --exclude=node_modules \
-          #     --exclude=vendor \
-          #     --exclude=.git \
-          #     --exclude=.github \
-          #     --exclude=storage/logs \
-          #     -czf deploy.tar.gz .
-          caprover deploy \
-            --caproverUrl http://77.237.240.70 \
-            --appName cribsearch \
-            --tarFile deploy.tar.gz \
-            --deployToken ${{ secrets.CAPROVER_DEPLOY_TOKEN }}
+      - name: Install CapRover CLI
+        run: npm install -g caprover
+
+      - name: Deploy to CapRover Using GitHub Actions
+        uses: dankore/github-to-caprover@v1.0.9
+        with:
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          password: '${{ secrets.CAPROVER_PASSWORD }}'
+          appName: '${{ secrets.APP_NAME }}'
+          image: 'j-thumi/cribsearch:latest'
+          # image: '${{ secrets. }}${{ github.sha }}'
