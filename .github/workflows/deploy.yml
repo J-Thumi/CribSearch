@@ -12,18 +12,38 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Node & NPM (optional if building front-end)
+      # 🔥 Install PHP 8.4 (fix your error)
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, bcmath, pdo, mysql
+          tools: composer
+
+      # Optional (only if using Vite / Mix frontend)
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - name: Install Composer
-        run: |
-          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-
-      - name: Install Dependencies
+      - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
+
+      # Build frontend assets if using Vite
+      - name: Build Frontend
+        run: |
+          if [ -f package.json ]; then
+            npm install
+            npm run build
+          fi
+
+      # Laravel optimization (important)
+      - name: Optimize Laravel
+        run: |
+          php artisan config:clear
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
       - name: Deploy to CapRover
         run: |
