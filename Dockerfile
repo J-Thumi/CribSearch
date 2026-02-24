@@ -77,6 +77,14 @@ RUN mkdir -p /var/log/supervisor && \
     chmod 755 /var/log/supervisor && \
     chown application:application /tmp
 
+    # Copy the startup script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Make it executable
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Use the script to run migrations then start supervisor
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 # Start base services via webdevops entrypoint (expects a command)
 # Run supervisord which manages nginx, php-fpm, our queue workers, and cron
 CMD ["supervisord"]
