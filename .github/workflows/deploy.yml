@@ -49,12 +49,12 @@ jobs:
         run: |
           npm install -g caprover
           # Create stable tar (exclude volatile folders)
-          tar --exclude=node_modules \
-              --exclude=vendor \
-              --exclude=.git \
-              --exclude=.github \
-              --exclude=storage/logs \
-              -czf deploy.tar.gz .
+          # tar --exclude=node_modules \
+          #     --exclude=vendor \
+          #     --exclude=.git \
+          #     --exclude=.github \
+          #     --exclude=storage/logs \
+          #     -czf deploy.tar.gz .
           caprover deploy \
             --caproverUrl http://77.237.240.70 \
             --appName cribsearch \
