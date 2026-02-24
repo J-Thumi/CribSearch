@@ -35,8 +35,6 @@ ENV WEB_DOCUMENT_ROOT=$WEB_PATH
 ARG LARAVEL_PATH=/production/cribsearch
 WORKDIR $LARAVEL_PATH
 
-# Provide environment file for the application
-COPY docker-configs/.env.local ./.env
 
 # Create necessary directories before composer install
 RUN mkdir -p bootstrap/cache && \
@@ -61,18 +59,6 @@ RUN php artisan storage:link && \
     chown -R www-data:www-data storage && \
     chown -R www-data:www-data public && \
     chmod -R 777 bootstrap
-
-# Enable cron service in webdevops base image
-# ENV SERVICE_CRON_ENABLED=1
-
-# Copy crontab file for Laravel scheduler and install it properly
-# COPY docker-configs/laravel-cron /tmp/laravel-cron
-# RUN chmod 0644 /tmp/laravel-cron && \
-#     crontab -u application /tmp/laravel-cron && \
-#     rm /tmp/laravel-cron
-
-# Copy supervisor configuration for Laravel queue workers only
-# COPY docker-configs/supervisord.conf /opt/docker/etc/supervisor.d/laravel.conf
 
 # Database configuration arguments
 ARG DB_CONNECTION
