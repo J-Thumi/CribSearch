@@ -47,8 +47,10 @@ jobs:
 
       - name: Deploy to CapRover
         run: |
+          npm install -g caprover
+          tar -czf deploy.tar.gz .
           caprover deploy \
             --caproverUrl http://77.237.240.70 \
             --appName cribsearch \
-            --branch main \
+            --tarFile deploy.tar.gz \
             --deployToken ${{ secrets.CAPROVER_DEPLOY_TOKEN }}
