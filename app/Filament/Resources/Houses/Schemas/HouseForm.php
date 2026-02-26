@@ -100,7 +100,7 @@ class HouseForm
                                         </iframe>
                                     </div>
                                     <small><a href='https://www.google.com/maps/search/?api=1&query=$lat,$lng' target='_blank' style='color: #3b82f6;'>View on Google Maps</a></small>
-                                ");
+                                    ");
                             }),
                     
    
@@ -117,6 +117,16 @@ class HouseForm
                                     ])
                                     ->required()
                                     ->live(), // Ensures price field visibility updates immediately
+
+                                Select::make('status')
+                                    ->options([
+                                        'vacant' => 'Vacant',
+                                        'occupied' => 'Occupied',
+                                        'pending' => 'Pending',
+                                    ])
+                                    ->default('vacant')
+                                    ->required()
+                                    ->selectablePlaceholder(false),
 
                                 TextInput::make('price')
                                     ->numeric()

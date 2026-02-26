@@ -8,12 +8,15 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Spatie\Permission\Traits\HasRoles; 
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use HasRoles, HasPanelShield;
 
     /**
      * The attributes that are mass assignable.
@@ -53,5 +56,12 @@ class User extends Authenticatable implements FilamentUser
         // For now, allow everyone to access. 
         // Later, you can change this to: return str_ends_with($this->email, '@jostech.co.ke');
         return true; 
+    }
+
+
+    public function houses(): HasMany
+    {
+        // We specify 'scout_id' as the foreign key on the houses table
+        return $this->hasMany(House::class, 'scout_id');
     }
 }
