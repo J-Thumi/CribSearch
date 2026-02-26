@@ -69,5 +69,5 @@ RUN mkdir -p /var/log/supervisor && \
     chmod 755 /var/log/supervisor && \
     chown application:application /tmp
 
-CMD ["/bin/bash", "-c", "php artisan migrate --force && php artisan vendor:publish --provider=\"Spatie\Permission\PermissionServiceProvider\" && supervisord"]
+CMD php artisan migrate --force && supervisord
 
