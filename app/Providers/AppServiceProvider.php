@@ -19,8 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('production') || env('FORCE_HTTPS', false) || str_starts_with(env('APP_URL', ''), 'https://') || env('APP_ENV') === 'production') {
-        URL::forceScheme('https');
-    }
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+            URL::forceRootUrl(config('app.url'));
+        }
     }
 }
