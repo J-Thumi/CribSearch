@@ -87,10 +87,102 @@
                                 </div>
                             @endif
                         </div>
+                       @if(!empty($unit['virtual_tour_images']))
+    <div class="w-full my-6 bg-white border border-gray-100 rounded-xl p-4 shadow-sm" x-data="{ activeTour: 0 }">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Virtual 360° Tour
+                </h3>
+                <p class="text-xs text-gray-400 mt-0.5">Drag to look around the space</p>
+            </div>
+            
+            {{-- Badge counter if there are multiple scenes --}}
+            @if(count($unit['virtual_tour_images']) > 1)
+                <span class="text-xs font-medium bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+                    {{ count($unit['virtual_tour_images']) }} Scenes Available
+                </span>
+            @endif
+        </div>
+
+        <div class="relative overflow-hidden rounded-xl bg-gray-50 border border-gray-200">
+            @foreach ($unit['virtual_tour_images'] as $index => $image_path)
+                <div
+                    x-show="activeTour === {{ $index }}"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    class="panorama-viewer w-full"
+                    style="height: 480px;" 
+                    data-id="tour-{{ $loop->parent->index ?? 0 }}-{{ $index }}"
+                    data-panorama="{{ asset('storage/' . $image_path) }}">
+                </div>
+            @endforeach
+        </div>
+
+        @if(count($unit['virtual_tour_images']) > 1)
+            <div class="flex items-center gap-3 mt-3 overflow-x-auto pb-2">
+                @foreach ($unit['virtual_tour_images'] as $index => $image_path)
+                    <button 
+                        @click="activeIndex = {{ $index }}; window.loadPannellumScene(scenes[{{ $index }}], 'global-panorama-viewer-{{ $loop->parent->index ?? 0 }}')"
+                        :class="activeIndex === {{ $index }} ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-gray-200'"
+                        class="relative flex-shrink-0 w-20 h-14 rounded-lg border-2 overflow-hidden transition-all duration-200 bg-gray-100">
+                        <img src="{{ asset('storage/' . $image_path) }}" class="w-full h-full object-cover brightness-90">
+                        <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white bg-black/30">
+                            Scene {{ $index + 1 }}
+                        </div>
+                    </button>
+                @endforeach
+            </div>
+        @endif
+    </div>
+@endif
+
+        
                     </section>
                 @endforeach
             </div>
+            <script>
+            document.addEventListener("DOMContentLoaded", function () {
+    if (typeof pannellum === 'undefined') {
+        console.error("Pannellum script library is missing from the layout.");
+        return;
+    }
 
+    // Initialize all instantly visible default viewers
+    document.querySelectorAll('.panorama-viewer').forEach(function (viewer) {
+        // Only load elements that aren't hidden by x-show on page load
+        if (viewer.style.display !== 'none') {
+            initSinglePannellum(viewer);
+        }
+    });
+});
+
+function initSinglePannellum(element) {
+    if (element && element.dataset.panorama && !element.classList.contains('pnlm-container')) {
+        pannellum.viewer(element, {
+            type: 'equirectangular',
+            panorama: element.dataset.panorama,
+            autoLoad: true,
+            compass: false,
+            uiText: { loadErrorText: "Failed to load 360° panorama." }
+        });
+    }
+}
+
+// Global scope window helper function triggered by Alpine tab switches
+window.initPannellumById = function(dataId) {
+    const targetElement = document.querySelector(`[data-id="${dataId}"]`);
+    if (targetElement) {
+        // Give time for display transition state
+        setTimeout(() => { initSinglePannellum(targetElement); }, 50);
+    }
+}
+            </script>
             <div class="lg:col-span-1">
                 <div class="sticky top-28 space-y-8">
                     

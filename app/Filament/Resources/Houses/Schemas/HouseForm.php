@@ -149,6 +149,22 @@ class HouseForm
                                     ->panelLayout('grid') // Shows photos in a grid instead of a long list
                                     ->maxFiles(10) // Prevents scouts from uploading too many
                                     ->columnSpanFull(),
+                                 FileUpload::make('virtual_tour_images')
+                                    ->label('Virtual Tour')
+                                    ->maxSize(102400)
+                                    ->acceptedFileTypes([
+                                        'image/jpeg',
+                                        'image/png'
+                                    ])
+                                    ->multiple() // This allows selecting more than one file
+                                    ->disk('public')
+                                    ->reorderable() // Scouts can drag to set the "main" photo
+                                    ->appendFiles() // Keeps existing images when adding new ones
+                                    ->directory('virtual-tours') // Saved in storage/app/public/house-units
+                                    ->visibility('public')
+                                    ->panelLayout('grid') // Shows photos in a grid instead of a long list
+                                    ->maxFiles(10) // Prevents scouts from uploading too many
+                                    ->columnSpanFull(),
                             ])
                             ->columns(2)
                             // This makes the repeater items look clean when collapsed

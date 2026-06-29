@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\House; // Ensure this matches your Model namespace
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class HouseController extends Controller
 {
@@ -38,6 +39,8 @@ class HouseController extends Controller
     public function show($id)
     {
         $house = House::findOrFail($id);
+
+        Log::info($house);
 
         // Optional: SEO or page title logic
         $pageTitle = $house->name . " - Property Details";
