@@ -13,6 +13,7 @@ use Filament\Actions\Action;
 use Illuminate\Support\HtmlString; 
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TagsInput;
 
 class HouseForm
 {
@@ -102,6 +103,21 @@ class HouseForm
                                     <small><a href='https://www.google.com/maps/search/?api=1&query=$lat,$lng' target='_blank' style='color: #3b82f6;'>View on Google Maps</a></small>
                                     ");
                             }),
+                        Repeater::make('Amenities')
+                            ->schema([
+                                TagsInput::make('onsite_amenities')
+                                    ->label('Onsite Amenities')
+                                    ->placeholder('Type and press Enter (e.g. Generator, Elevator)')
+                                    ->columnSpanFull(),
+
+                                TagsInput::make('social_amenities')
+                                    ->label('Social Amenities')
+                                    ->placeholder('Type and press Enter (e.g. Gym, Club)')
+                                    ->columnSpanFull(),
+                            ])
+                            ->collapsible()
+                            ->defaultItems(1)
+                            ->addActionLabel('Add Another Amenity'),
                     
    
                         Repeater::make('units')

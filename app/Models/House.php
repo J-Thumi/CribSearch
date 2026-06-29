@@ -18,6 +18,7 @@ class House extends Model
         'long',
         'units',
         'status',
+        'Amenities'
     ];
 
     /**
@@ -27,6 +28,7 @@ class House extends Model
         'units' => 'array', // This is crucial for your Repeater field!
         'lat' => 'float',
         'long' => 'float',
+        'Amenities' => 'array',
     ];
 
     public function scout(): BelongsTo
