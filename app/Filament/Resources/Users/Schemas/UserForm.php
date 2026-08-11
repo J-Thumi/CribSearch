@@ -6,7 +6,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
-
+use Filament\Forms\Components\Toggle;
 
 class UserForm
 {
@@ -30,6 +30,13 @@ class UserForm
                     ->preload()   // Loads the list immediately for a better UI
                     ->searchable()
                     ->required(),
+                Toggle::make('is_admin')
+                    ->label('Admin Access')
+                    ->helperText('Enable to allow user access to the /admin portal.')
+                    ->onIcon('heroicon-m-shield-check')
+                    ->offIcon('heroicon-m-x-mark')
+                    ->onColor('success')
+                    ->offColor('danger'),
             ]);
     }
 }
