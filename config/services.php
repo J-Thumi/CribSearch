@@ -9,6 +9,11 @@ return [
         'invoice_expiry' => env('BLINK_INVOICE_EXPIRY', 600), // Invoice expiry in seconds (default 10 minutes)
     ],
 
+    'bitika' => [
+        'api_key' => env('BITIKA_API_KEY'),
+        'base_url' => env('BITIKA_BASE_URL'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
