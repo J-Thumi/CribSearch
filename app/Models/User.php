@@ -11,11 +11,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles; 
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
     use HasRoles, HasPanelShield;
 
     /**
@@ -27,6 +28,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        "is_admin",
     ];
 
     /**
@@ -49,13 +51,12 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
     public function canAccessPanel(Panel $panel): bool
-    {
-        // For now, allow everyone to access. 
-        // Later, you can change this to: return str_ends_with($this->email, '@jostech.co.ke');
-        return true; 
+    { 
+        return (bool) $this->is_admin;
     }
 
 
