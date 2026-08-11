@@ -2,6 +2,13 @@
 
 return [
 
+    'blink' => [
+        'api_key' => env('BLINK_API_KEY'),
+        'invoice_amount' => env('BLINK_INVOICE_AMOUNT', 100), // Amount in satoshis
+        'graphql_url' => env('BLINK_GRAPHQL_URL', 'https://api.blink.sv/graphql'),
+        'invoice_expiry' => env('BLINK_INVOICE_EXPIRY', 600), // Invoice expiry in seconds (default 10 minutes)
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
