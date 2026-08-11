@@ -69,156 +69,216 @@
 @extends('layouts.app')
 
 @section('content')
-  <section class="map-hero h-screen flex items-center justify-center relative px-6">
-    <div class="max-w-4xl w-full text-center text-white">
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">Hunt Smarter.<br>Live Better.</h1>
-      <p class="text-xl md:text-2xl mb-10 opacity-95 max-w-2xl mx-auto font-light">
-        The next-generation aerial exploration engine for real estate discovery.
-      </p>
-
-      <div class="bg-white p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 max-w-3xl mx-auto">
-        <div class="flex-1 flex items-center px-4">
-          <span class="text-gray-400 mr-2">📍</span>
-          <input type="text" placeholder="Search city, estate, or ZIP code..." class="w-full py-4 focus:outline-none text-gray-800 font-medium">
-        </div>
-        <button class="bg-accent hover:bg-red-600 px-8 py-4 rounded-xl font-bold text-white transition-all">
-          Start Aerial Scouting
-        </button>
-      </div>
-
-      <div class="mt-8 flex justify-center gap-6 text-sm font-medium">
-        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-success"></span> Available</span>
-        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-danger"></span> Occupied</span>
-        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-warning"></span> Pending</span>
-      </div>
+<!-- Hero Section -->
+<div class="relative bg-dark min-h-[85vh] flex items-center justify-center overflow-hidden">
+    <!-- Background Image Overlay with Gradients -->
+    <div class="absolute inset-0 z-0 opacity-40 bg-cover bg-center" 
+         style="background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=80');">
     </div>
-  </section>
+    <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/70 to-transparent z-0"></div>
 
-  <section id="features" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
-        <div>
-          <h2 class="text-primary text-sm font-bold uppercase tracking-widest mb-3">Immersive Tech</h2>
-          <h3 class="text-4xl font-bold mb-6 text-gray-900 leading-tight">Aerial Discovery & 3D Mapping</h3>
-          <p class="text-gray-600 text-lg mb-8 leading-relaxed">
-            Move beyond static lists. Visually scout neighborhoods using a satellite-based, interactive interface with smooth 3D tilting and real-time property markers.
-          </p>
-          <div class="grid sm:grid-cols-2 gap-6">
-            <div class="flex gap-4">
-              <!-- <div class="text-2xl">🏙️</div> -->
-              <div>
-                <h4 class="font-bold">Street-Level View</h4>
-                <p class="text-sm text-gray-500">Integrated API for ground exploration.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <!-- <div class="text-2xl">🔥</div> -->
-              <div>
-                <h4 class="font-bold">Heatmaps</h4>
-                <p class="text-sm text-gray-500">Crime and infrastructure data overlays.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="bg-bg rounded-3xl p-8 border border-gray-100 shadow-inner">
-           <div class="bg-white rounded-xl shadow-lg p-6 max-w-xs mx-auto relative animated-pin">
-              <div class="h-32 bg-gray-200 rounded-lg mb-4 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=400" alt="Property">
-              </div>
-              <h5 class="font-bold text-lg">$450,000</h5>
-              <p class="text-xs text-gray-400 mb-2">3 Bed • 2 Bath • 2,400 sqft</p>
-              <div class="flex justify-between items-center">
-                <span class="text-xs px-2 py-1 bg-success/10 text-success font-bold rounded">AVAILABLE</span>
-                <button class="text-actionable text-xs font-bold">View Details →</button>
-              </div>
-           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="pricing" class="py-24 bg-gray-50 border-y border-gray-200">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold mb-4">Choose Your Strategy</h2>
-        <p class="text-gray-500">From casual browsing to professional institutional investing.</p>
-      </div>
-      
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-          <h4 class="font-bold text-xl mb-2">Guest</h4>
-          <div class="text-4xl font-bold mb-6">$0<span class="text-sm text-gray-400 font-normal">/forever</span></div>
-          <ul class="space-y-4 mb-8 flex-1 text-sm">
-            <li class="flex items-center gap-3"> Basic Aerial Map </li>
-            <li class="flex items-center gap-3"> Limited Alerts </li>
-            <li class="flex items-center gap-3"> Ads Displayed </li>
-          </ul>
-          <button class="w-full py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition">Get Started</button>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+        <!-- Pill Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest mb-6">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Verified Homes & 360° Virtual Tours
         </div>
 
-        <div class="bg-primary p-8 rounded-3xl shadow-xl text-white transform scale-105 flex flex-col relative overflow-hidden">
-          <div class="absolute top-4 right-4 bg-accent px-3 py-1 rounded-full text-xs font-bold">POPULAR</div>
-          <h4 class="font-bold text-xl mb-2 text-white/90">Investor Pro</h4>
-          <div class="text-4xl font-bold mb-6">$49<span class="text-sm text-white/60 font-normal">/mo</span></div>
-          <ul class="space-y-4 mb-8 flex-1 text-sm text-white/90">
-            <li class="flex items-center gap-3"> Rental Yield Calculator</li>
-            <li class="flex items-center gap-3"> Area Appreciation Forecasts</li>
-            <li class="flex items-center gap-3">Early Access Listings</li>
-            <li class="flex items-center gap-3">Historical Price Trends</li>
-          </ul>
-          <button class="w-full py-4 bg-white text-primary font-bold rounded-xl shadow-lg hover:bg-gray-100 transition">Start 14-Day Trial</button>
-        </div>
-
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-          <h4 class="font-bold text-xl mb-2">Agent Pro</h4>
-          <div class="text-4xl font-bold mb-6">$99<span class="text-sm text-gray-400 font-normal">/mo</span></div>
-          <ul class="space-y-4 mb-8 flex-1 text-sm">
-            <li class="flex items-center gap-3"> Priority Marker Placement</li>
-            <li class="flex items-center gap-3"> Animated Featured Pins</li>
-            <li class="flex items-center gap-3">Lead Management CRM</li>
-          </ul>
-          <button class="w-full py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition">Partner With Us</button>
-        </div>
-      </div>
-    </div>
-  </section>
-<!-- 
-  <footer class="bg-dark text-white py-20 px-6">
-    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
-      <div class="col-span-2">
-        <h2 class="text-3xl font-bold mb-6 text-primary">CribSearch</h2>
-        <p class="text-gray-400 max-w-sm mb-6">
-          Transforming property search into an immersive aerial experience. Reduce unnecessary physical visits and accelerate your decision-making.
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-black text-white uppercase tracking-tight max-w-4xl mx-auto leading-none mb-6">
+            Find Your Next <span class="text-primary underline decoration-primary/40 underline-offset-8">Dream Crib</span> Without The Stress.
+        </h1>
+        
+        <p class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto font-light mb-10 leading-relaxed">
+            Skip fake listings and unreliable agents. Explore verified residential properties across Kenya with interactive 360° tours and transparent pricing.
         </p>
-        <div class="flex gap-4">
-          <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">🍎</div>
-          <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">🤖</div>
-        </div>
-      </div>
-      <div>
-        <h4 class="font-bold mb-6">Technical Stack</h4>
-        <ul class="text-gray-500 space-y-3 text-sm">
-          <li>React / React Native</li>
-          <li>WebSocket Real-time</li>
-          <li>Google Maps / OSM API</li>
-          <li>Stripe Payments</li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-bold mb-6">Compliance</h4>
-        <ul class="text-gray-500 space-y-3 text-sm">
-          <li>GDPR Compliant</li>
-          <li>Role-based Security</li>
-          <li>Anti-Spoofing</li>
-        </ul>
-      </div>
-    </div>
-    <div class="max-w-7xl mx-auto border-t border-white/10 mt-16 pt-8 text-center text-xs text-gray-600">
-      © 2026 CribSearch. Developed as a high-fidelity prop-tech solution.
-    </div>
-  </footer> -->
 
-  @endsection
-<!-- 
-</body>
-</html> -->
+        <!-- Search Bar Component -->
+        <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-2xl max-w-4xl mx-auto border border-white/20">
+            <form action="{{ route('houses.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                <div class="sm:col-span-4 text-left border-b sm:border-b-0 sm:border-r border-gray-100 pb-2 sm:pb-0 sm:pr-4">
+                    <label class="block text-[10px] font-black uppercase text-gray-400 tracking-wider mb-1">Location</label>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <input type="text" name="location" placeholder="Kilimani, Westlands, Ruiru..." 
+                            class="w-full bg-transparent text-sm font-medium focus:outline-none text-dark placeholder-gray-400">
+                    </div>
+                </div>
+
+                <div class="sm:col-span-3 text-left border-b sm:border-b-0 sm:border-r border-gray-100 pb-2 sm:pb-0 sm:pr-4">
+                    <label class="block text-[10px] font-black uppercase text-gray-400 tracking-wider mb-1">Type</label>
+                    <select name="type" class="w-full bg-transparent text-sm font-medium focus:outline-none text-dark cursor-pointer">
+                        <option value="">All Categories</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="mansionette">Mansionette</option>
+                        <option value="studio">Studio / Bedsitter</option>
+                        <option value="villa">Luxury Villa</option>
+                    </select>
+                </div>
+
+                <div class="sm:col-span-3 text-left pb-2 sm:pb-0">
+                    <label class="block text-[10px] font-black uppercase text-gray-400 tracking-wider mb-1">Max Price (KES)</label>
+                    <input type="number" name="max_price" placeholder="e.g. 50,000" 
+                        class="w-full bg-transparent text-sm font-medium focus:outline-none text-dark placeholder-gray-400">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <button type="submit" 
+                        class="w-full h-full min-h-[48px] bg-primary hover:bg-dark text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-md transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>Search</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-16 pt-12 border-t border-white/10">
+            <div>
+                <span class="block text-3xl font-black text-white">500+</span>
+                <span class="text-xs uppercase tracking-widest text-primary font-medium">Scouted Properties</span>
+            </div>
+            <div>
+                <span class="block text-3xl font-black text-white">100%</span>
+                <span class="text-xs uppercase tracking-widest text-primary font-medium">Verified Agents</span>
+            </div>
+            <div>
+                <span class="block text-3xl font-black text-white">360°</span>
+                <span class="text-xs uppercase tracking-widest text-primary font-medium">Virtual Tours</span>
+            </div>
+            <div>
+                <span class="block text-3xl font-black text-white">0</span>
+                <span class="text-xs uppercase tracking-widest text-primary font-medium">Viewing Scandals</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features / How It Works -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <h2 class="text-xs font-black uppercase tracking-[0.3em] text-primary mb-3">Smarter Scouting</h2>
+            <h3 class="text-3xl sm:text-4xl font-black uppercase text-dark tracking-tight">Why Choose {{ config('app.name', 'CribSearch') }}</h3>
+            <div class="w-12 h-1 bg-primary mx-auto mt-4"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="p-8 rounded-2xl bg-bg border border-gray-100 hover:border-primary/50 transition-all duration-300 group hover:-translate-y-1">
+                <div class="w-14 h-14 bg-dark text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-lg">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </div>
+                <h4 class="text-xl font-black uppercase text-dark mb-3">360° Virtual Inspection</h4>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Walk through bedrooms, kitchens, and living rooms from your phone. Inspect every detail before paying viewing fees.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="p-8 rounded-2xl bg-bg border border-gray-100 hover:border-primary/50 transition-all duration-300 group hover:-translate-y-1">
+                <div class="w-14 h-14 bg-dark text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-lg">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <h4 class="text-xl font-black uppercase text-dark mb-3">100% Verified Listings</h4>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Every property is physically scouted and vetted by authorized agents to guarantee existence, accurate pricing, and water/security checks.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="p-8 rounded-2xl bg-bg border border-gray-100 hover:border-primary/50 transition-all duration-300 group hover:-translate-y-1">
+                <div class="w-14 h-14 bg-dark text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-lg">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h4 class="text-xl font-black uppercase text-dark mb-3">Instant Visit Booking</h4>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Found something you love? Book a direct physical visit with the property scout in just a single click.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive 360 Showcase Section -->
+<section class="py-20 bg-dark text-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-5 space-y-6">
+                <span class="inline-block px-3 py-1 rounded bg-primary/20 text-primary text-xs font-bold uppercase tracking-widest">Interactive Feature</span>
+                <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight">Experience 360° Virtual Living</h2>
+                <p class="text-gray-400 text-sm leading-relaxed font-light">
+                    Drag around to explore room interiors interactively. We integrate full panoramic virtual viewing directly into house profiles so you know exactly what you are paying for.
+                </p>
+                <div class="pt-4">
+                    <a href="{{ route('houses.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-white hover:text-dark transition-all duration-300 shadow-lg">
+                        <span>Browse 360° Homes</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Pannellum Viewer Container -->
+            <div class="lg:col-span-7">
+                <div class="relative rounded-2xl overflow-hidden border-2 border-gray-800 shadow-2xl bg-black">
+                    <div id="panorama-preview" class="w-full h-[400px]"></div>
+                    <div class="absolute bottom-4 left-4 bg-dark/80 backdrop-blur-md px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-primary border border-gray-700">
+                        Drag mouse or swipe to rotate 360°
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call To Action for House Owners / Agents -->
+<section class="py-20 bg-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-dark to-gray-900 rounded-3xl p-8 sm:p-16 text-center relative overflow-hidden shadow-2xl">
+            <div class="relative z-10 max-w-2xl mx-auto">
+                <h2 class="text-xs font-black uppercase tracking-[0.3em] text-primary mb-3">For Landlords & Agents</h2>
+                <h3 class="text-3xl sm:text-4xl font-black uppercase text-white tracking-tight mb-6">
+                    Have a property to list or scout?
+                </h3>
+                <p class="text-gray-400 text-sm mb-8 leading-relaxed font-light">
+                    Join our network of verified scouts and property managers. Get high quality leads and tenant bookings directly to your agent dashboard.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="/admin" class="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-white hover:text-dark text-white rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300">
+                        Access Agent Portal
+                    </a>
+                    <a href="/contact" class="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-xs uppercase tracking-widest border border-white/10 transition-all duration-300">
+                        Talk To Our Team
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pannellum Tour Initialization Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (typeof pannellum !== 'undefined') {
+            pannellum.viewer('panorama-preview', {
+                "type": "equirectangular",
+                "panorama": "https://pannellum.org/images/alma.jpg", // Demo equirectangular image
+                "autoLoad": true,
+                "autoRotate": -2,
+                "showControls": false
+            });
+        }
+    });
+</script>
+@endsection
