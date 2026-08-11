@@ -17,6 +17,11 @@ class House extends Model
         'lat',
         'long',
         'units',
+        'nearest_gate',
+        'estimated_time_to_school',
+        'approximate_area',
+        'caretaker_name',
+        'caretaker_phone',
         'status',
         'Amenities'
     ];

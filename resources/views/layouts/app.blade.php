@@ -8,6 +8,8 @@
     <title>{{ $pageTitle ?? config('app.name', 'CribSearch') }}</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+    <!-- Alpine.js Core -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
@@ -48,31 +50,56 @@
 <body class="text-dark antialiased">
 
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center">
-                    <a href="/" class="flex-shrink-0 flex items-center gap-2 group">
-                        <div class="w-10 h-10 bg-dark rounded-lg flex items-center justify-center text-primary shadow-lg group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                        </div>
-                        <span class="text-2xl font-black tracking-tighter text-dark uppercase">
-                            {{ config('app.name', 'CribSearch') }}
-                        </span>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20">
+            <!-- Brand Logo -->
+            <div class="flex items-center">
+                <a href="/" class="flex-shrink-0 flex items-center gap-2 group">
+                    <div class="w-10 h-10 bg-dark rounded-lg flex items-center justify-center text-primary shadow-lg group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-dark uppercase">
+                        {{ config('app.name', 'CribSearch') }}
+                    </span>
+                </a>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/" class="text-xs font-bold uppercase tracking-widest {{ request()->is('/') ? 'active-link' : 'text-gray-500 hover:text-primary' }} py-2 transition">Home</a>
+                <a href="{{ route('houses.index') }}" class="text-xs font-bold uppercase tracking-widest {{ request()->routeIs('houses.*') ? 'active-link' : 'text-gray-500 hover:text-primary' }} py-2 transition">Find Houses</a>
+                <a href="{{ url('/admin') }}" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-primary py-2 transition">Agent Portal</a>
+                
+                <div class="h-6 w-px bg-gray-200 my-auto"></div>
+
+                <!-- Guest State (Hidden if logged in) -->
+                <div id="guest-nav-desktop" class="flex items-center space-x-4">
+                    <a href="/login" class="text-xs font-bold uppercase tracking-widest text-dark hover:text-primary transition py-2">
+                        Sign In
+                    </a>
+                    <a href="/register" class="px-5 py-2.5 bg-primary text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-dark shadow-md transition-all duration-300">
+                        Register
                     </a>
                 </div>
 
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="/" class="text-xs font-bold uppercase tracking-widest {{ request()->is('/') ? 'active-link' : 'text-gray-500 hover:text-primary' }} py-2 transition">Home</a>
-                    <a href="{{ route('houses.index') }}" class="text-xs font-bold uppercase tracking-widest {{ request()->routeIs('houses.*') ? 'active-link' : 'text-gray-500 hover:text-primary' }} py-2 transition">Find Houses</a>
-                    <!-- <a href="/about" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-primary py-2 transition">About</a> -->
-                    <a href="{{url('/admin')}}" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-primary py-2 transition">Agent Portal</a>
-                    <a href="/contact" class="px-6 py-3 bg-actionable text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-dark shadow-md transition-all duration-300">
-                        Contact Support
+                <!-- Authenticated State (Hidden by default, shown if token exists) -->
+                <div id="auth-nav-desktop" class="hidden items-center space-x-4">
+                    <span id="nav-user-name" class="text-xs font-bold uppercase text-primary tracking-wider bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
+                        Account
+                    </span>
+                    <button id="logout-btn-desktop" onclick="handleLogout()" class="px-5 py-2.5 bg-dark text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-red-600 shadow-md transition-all duration-300">
+                        Logout
+                    </button>
+                </div>
+
+                <a href="/contact" class="px-5 py-2.5 bg-actionable text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-dark shadow-md transition-all duration-300">
+                        Support
                     </a>
                 </div>
 
+                <!-- Mobile Hamburger Button -->
                 <div class="md:hidden flex items-center">
                     <button id="mobile-menu-button" class="text-dark hover:text-primary focus:outline-none">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,10 +110,28 @@
             </div>
         </div>
 
+        <!-- Mobile Dropdown Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-4 pb-8 space-y-2 shadow-xl">
             <a href="/" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase text-dark hover:bg-bg">Home</a>
             <a href="{{ route('houses.index') }}" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase text-dark hover:bg-bg">Find Houses</a>
-            <a href="/contact" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase bg-primary text-white text-center mt-4 shadow-lg">Contact Us</a>
+            <a href="{{ url('/admin') }}" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase text-dark hover:bg-bg">Agent Portal</a>
+            
+            <div class="border-t border-gray-100 my-2 pt-2"></div>
+
+            <!-- Mobile Guest State -->
+            <div id="guest-nav-mobile" class="space-y-2">
+                <a href="/login" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase text-dark hover:bg-bg">Sign In</a>
+                <a href="/register" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase bg-primary text-white text-center shadow-md">Register</a>
+            </div>
+
+            <!-- Mobile Auth State -->
+            <div id="auth-nav-mobile" class="hidden space-y-2">
+                <button id="logout-btn-mobile" onclick="handleLogout()" class="w-full text-left px-4 py-3 rounded-lg text-sm font-bold uppercase bg-red-600 text-white text-center shadow-md">
+                    Logout
+                </button>
+            </div>
+
+            <a href="/contact" class="block px-4 py-3 rounded-lg text-sm font-bold uppercase bg-actionable text-white text-center mt-2 shadow-md">Contact Support</a>
         </div>
     </nav>
 
@@ -128,12 +173,85 @@
     </footer>
 
     <script>
-        const btn = document.getElementById('mobile-menu-button');
-        const menu = document.getElementById('mobile-menu');
+    // Mobile menu toggle
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
 
+    if (btn && menu) {
         btn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
         });
-    </script>
+    }
+
+    // Check Sanctum Auth State on page load
+    document.addEventListener("DOMContentLoaded", async function() {
+        const token = localStorage.getItem('auth_token');
+
+        if (token) {
+            // Show Authenticated state, Hide Guest state
+            document.getElementById('guest-nav-desktop')?.classList.add('hidden');
+            document.getElementById('guest-nav-mobile')?.classList.add('hidden');
+            
+            const authDesktop = document.getElementById('auth-nav-desktop');
+            const authMobile = document.getElementById('auth-nav-mobile');
+
+            if (authDesktop) {
+                authDesktop.classList.remove('hidden');
+                authDesktop.classList.add('flex');
+            }
+            if (authMobile) {
+                authMobile.classList.remove('hidden');
+            }
+
+            // Fetch user info from /api/me
+            try {
+                const response = await fetch('/api/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const nameSpan = document.getElementById('nav-user-name');
+                    if (nameSpan && data.user) {
+                        nameSpan.textContent = data.user.name.split(' ')[0]; // Show first name
+                    }
+                } else if (response.status === 401) {
+                    // Token expired or revoked
+                    localStorage.removeItem('auth_token');
+                    window.location.reload();
+                }
+            } catch (err) {
+                console.error("Auth check failed:", err);
+            }
+        }
+    });
+
+    // Logout Handler Function
+    async function handleLogout() {
+        const token = localStorage.getItem('auth_token');
+        
+        if (token) {
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (err) {
+                console.error("Logout request error:", err);
+            }
+        }
+
+        // Clear local token and redirect to login
+        localStorage.removeItem('auth_token');
+        window.location.href = '/login';
+    }
+</script>
 </body>
 </html>

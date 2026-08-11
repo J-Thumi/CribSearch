@@ -30,6 +30,39 @@ class HouseForm
                             ->required()
                             ->placeholder('07...'),
 
+                        TextInput::make('estimated_time_to_school')
+                            ->label('Estimated Time to School')
+                            ->placeholder('e.g. 5 mins walk or 2 mins on Bodaboda')
+                            ->helperText('Helps students gauge distance to lecture halls.'),
+
+                        TextInput::make('approximate_area')
+                            ->label('Approximate Area / Locality')
+                            ->placeholder('e.g. Gate A - Near Sewage, Gachororo, Highfield')
+                            ->required(),
+
+                        Select::make('nearest_gate')
+                            ->label('Nearest JKUAT Gate')
+                            ->options([
+                                'Gate A' => 'Gate A (Main/Gachororo)',
+                                'Gate B' => 'Gate B (Hospital/Agric Side)',
+                                'Gate C' => 'Gate C (Highfield Side)',
+                                'Gate D' => 'Gate D',
+                                'Kiongo Gate' => 'Kiongo Gate',
+                                'Juja Stage' => 'Juja Main Stage / Flyover',
+                                'Gachororo' => 'Gachororo (Near Sewage)',
+                            ])
+                            ->searchable()
+                            ->placeholder('Select primary gate'),
+
+
+                        TextInput::make('caretaker_name')
+                            ->label('Caretaker Name')
+                            ->placeholder('e.g. John Doe'),
+
+                        TextInput::make('caretaker_phone')
+                            ->label('Caretaker Phone Number')
+                            ->tel()
+                            ->placeholder('0712345678'),
                         // Automatically captures the logged-in scout's ID
                         Hidden::make('scout_id')
                             ->default(auth()->id())
