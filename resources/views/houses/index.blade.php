@@ -9,6 +9,71 @@
             <p class="mt-4 text-lg text-gray-600 font-sans">Discover premium scouted listings tailored for you.</p>
         </div>
 
+        <form action="{{ route('houses.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+    <!-- Existing Search Input -->
+    <div>
+        <label class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Search</label>
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Property name..." 
+               class="w-full bg-bg border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary">
+    </div>
+
+    <!-- NEW: Gate Filter Dropdown -->
+    <div>
+        <label class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Campus Gate</label>
+        <select name="gate" onchange="this.form.submit()" 
+                class="w-full bg-bg border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-dark focus:outline-none focus:border-primary">
+            <option value="">All Gates / Locations</option>
+            @foreach(['Gate A', 'Gate B', 'Gate C', 'Juja Stage', 'Gate D', 'Kiongo Gate' ,'Gachororo'] as $gate)
+                <option value="{{ $gate }}" {{ request('gate') == $gate ? 'selected' : '' }}>
+                    📍 {{ $gate }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <!-- Submit & Reset Buttons -->
+    <div class="flex items-end gap-2">
+        <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-dark transition text-sm">
+            Filter
+        </button>
+        @if(request()->hasAny(['search', 'gate']))
+            <a href="{{ route('houses.index') }}" class="bg-gray-100 text-gray-600 font-bold py-3 px-4 rounded-xl hover:bg-gray-200 transition text-sm">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
+        <!-- Filter Bar -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-10">
+            <form action="{{ route('houses.index') }}" method="GET" class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                
+                <div class="w-full sm:w-auto flex-1">
+                    <label for="size" class="block text-xs font-bold uppercase tracking-wider text-dark mb-2">
+                        Filter by Unit Type
+                    </label>
+                    <select name="size" id="size" onchange="this.form.submit()" class="w-full bg-bg border border-gray-200 text-dark text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-primary font-medium">
+                        <option value="">All Unit Types</option>
+                        <option value="bedsitter" {{ request('size') == 'bedsitter' ? 'selected' : '' }}>Bedsitter</option>
+                        <option value="one_bedroom" {{ request('size') == 'one_bedroom' ? 'selected' : '' }}>1 Bedroom</option>
+                        <option value="two_bedroom" {{ request('size') == 'two_bedroom' ? 'selected' : '' }}>2 Bedroom</option>
+                        <option value="three_bedroom" {{ request('size') == 'three_bedroom' ? 'selected' : '' }}>3 Bedroom</option>
+                        <option value="single_room" {{ request('size') == 'single_room' ? 'selected' : '' }}>Single Room</option>
+                        <option value="own_compound" {{ request('size') == 'own_compound' ? 'selected' : '' }}>Own Compound</option>
+                    </select>
+                </div>
+
+                @if(request('size'))
+                    <div class="w-full sm:w-auto flex items-end pt-2 sm:pt-6">
+                        <a href="{{ route('houses.index') }}" class="w-full sm:w-auto px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-600 hover:text-white transition-all text-center">
+                            Reset Filter
+                        </a>
+                    </div>
+                @endif
+
+            </form>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($houses as $house)
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:border-primary transition-all duration-300 group">
