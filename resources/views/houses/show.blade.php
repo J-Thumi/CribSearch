@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    // Check if user has unlocked house details via helper function
+    $unlocked = function_exists('isHouseDetailsUnlocked') ? isHouseDetailsUnlocked() : false;
+@endphp
+
 <div class="bg-white min-h-screen py-10 font-sans" x-data="{ unlockModalOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -19,23 +24,32 @@
                         Verified Managed Property
                     </span>
                     <span class="text-gray-300">•</span>
-                    <span class="font-semibold text-gray-700">Scout: {{ $house->scout->name }}</span>
+                    <span class="font-semibold text-gray-700">Scout: {{ $house->scout->name ?? 'Agent' }}</span>
                 </p>
             </div>
             
             <div class="flex flex-col sm:flex-row gap-3">
-                <button 
-                    @click="unlockModalOpen = true"
-                    type="button"
-                    class="inline-flex items-center justify-center px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    Unlock Details (KES 100)
-                </button>
+                @if(!$unlocked)
+                    <button 
+                        @click="unlockModalOpen = true"
+                        type="button"
+                        class="inline-flex items-center justify-center px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Unlock Details (KES 100)
+                    </button>
+                @else
+                    <div class="inline-flex items-center justify-center px-6 py-4 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold rounded-xl text-sm">
+                        <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Full Details Unlocked
+                    </div>
+                @endif
 
                 <a href="{{ route('houses.index', ['scout' => $house->scout_id]) }}" 
-                class="inline-flex items-center justify-center px-6 py-4 bg-white border border-gray-200 text-dark font-bold rounded-xl hover:bg-bg transition shadow-sm">
+                   class="inline-flex items-center justify-center px-6 py-4 bg-white border border-gray-200 text-dark font-bold rounded-xl hover:bg-bg transition shadow-sm">
                     <svg class="w-5 h-5 mr-2 text-actionable" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
@@ -44,14 +58,17 @@
 
                 <a href="tel:{{ $house->contact_number }}" 
                    class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-dark transition shadow-lg shadow-primary/20">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
                     Call Scout
                 </a>
             </div>
         </div>
 
-        <!-- NEW: JKUAT Proximity & Location Overview Banner -->
+        <!-- JKUAT Proximity & Location Overview Banner -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <!-- Public: Nearest Gate -->
             <div class="bg-bg border border-gray-200/80 rounded-2xl p-5 flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,6 +82,7 @@
                 </div>
             </div>
 
+            <!-- Gated: Estimated Travel Time -->
             <div class="bg-bg border border-gray-200/80 rounded-2xl p-5 flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl bg-actionable/10 text-actionable flex items-center justify-center shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,10 +91,17 @@
                 </div>
                 <div>
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Estimated Travel Time</span>
-                    <p class="text-base font-extrabold text-dark mt-0.5">{{ $house->estimated_time_to_school ?? 'Not Specified' }}</p>
+                    @if($unlocked)
+                        <p class="text-base font-extrabold text-dark mt-0.5">{{ $house->estimated_time_to_school ?? 'Not Specified' }}</p>
+                    @else
+                        <p @click="unlockModalOpen = true" class="text-base font-extrabold text-dark mt-0.5 blur-sm select-none cursor-pointer hover:opacity-80 transition" title="Click to unlock">
+                            10 Mins Walk
+                        </p>
+                    @endif
                 </div>
             </div>
 
+            <!-- Gated: Locality / Area -->
             <div class="bg-bg border border-gray-200/80 rounded-2xl p-5 flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +110,13 @@
                 </div>
                 <div>
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Locality / Area</span>
-                    <p class="text-base font-extrabold text-dark mt-0.5 truncate">{{ $house->approximate_area ?? $house->address }}</p>
+                    @if($unlocked)
+                        <p class="text-base font-extrabold text-dark mt-0.5 truncate">{{ $house->approximate_area ?? $house->address }}</p>
+                    @else
+                        <p @click="unlockModalOpen = true" class="text-base font-extrabold text-dark mt-0.5 blur-sm select-none cursor-pointer hover:opacity-80 transition" title="Click to unlock">
+                            Highpoint Juja Stage
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -101,7 +132,6 @@
                             <h2 class="text-xl font-bold text-gray-800 tracking-tight">
                                 About This Property
                             </h2>
-
                             <p class="text-xs text-gray-400 mt-0.5">
                                 Property description
                             </p>
@@ -232,15 +262,15 @@
                                 </div>
 
                                 <div class="relative overflow-hidden rounded-xl bg-gray-50 border border-gray-200">
-                                    @foreach ($unit['virtual_tour_images'] as $index => $image_path)
+                                    @foreach ($unit['virtual_tour_images'] as $tourIndex => $image_path)
                                         <div
-                                            x-show="activeTour === {{ $index }}"
+                                            x-show="activeTour === {{ $tourIndex }}"
                                             x-transition:enter="transition ease-out duration-300"
                                             x-transition:enter-start="opacity-0"
                                             x-transition:enter-end="opacity-100"
                                             class="panorama-viewer w-full"
                                             style="height: 480px;" 
-                                            data-id="tour-{{ $loop->parent->index ?? 0 }}-{{ $index }}"
+                                            data-id="tour-{{ $loop->parent->index ?? 0 }}-{{ $tourIndex }}"
                                             data-panorama="{{ asset('storage/' . $image_path) }}">
                                         </div>
                                     @endforeach
@@ -248,14 +278,14 @@
 
                                 @if(count($unit['virtual_tour_images']) > 1)
                                     <div class="flex items-center gap-3 mt-3 overflow-x-auto pb-2">
-                                        @foreach ($unit['virtual_tour_images'] as $index => $image_path)
+                                        @foreach ($unit['virtual_tour_images'] as $tourIndex => $image_path)
                                             <button 
-                                                @click="activeTour = {{ $index }}; window.initPannellumById('tour-{{ $loop->parent->index ?? 0 }}-{{ $index }}')"
-                                                :class="activeTour === {{ $index }} ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-gray-200'"
+                                                @click="activeTour = {{ $tourIndex }}; window.initPannellumById('tour-{{ $loop->parent->index ?? 0 }}-{{ $tourIndex }}')"
+                                                :class="activeTour === {{ $tourIndex }} ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-gray-200'"
                                                 class="relative flex-shrink-0 w-20 h-14 rounded-lg border-2 overflow-hidden transition-all duration-200 bg-gray-100">
                                                 <img src="{{ asset('storage/' . $image_path) }}" class="w-full h-full object-cover brightness-90">
                                                 <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white bg-black/30">
-                                                    Scene {{ $index + 1 }}
+                                                    Scene {{ $tourIndex + 1 }}
                                                 </div>
                                             </button>
                                         @endforeach
@@ -271,92 +301,104 @@
             <div class="lg:col-span-1">
                 <div class="sticky top-28 space-y-8">
                     
-                    <!-- Map Box -->
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-100">
+                    <!-- Gated Map Box -->
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-100 relative">
                         <div class="p-5 bg-dark text-white flex justify-between items-center">
                             <span class="font-bold uppercase tracking-widest text-xs">Property Location</span>
                             <span class="px-2 py-1 bg-primary text-[10px] rounded font-bold">LIVE MAP</span>
                         </div>
-                        <div class="h-64 grayscale-[0.2] hover:grayscale-0 transition duration-500">
-                            <iframe 
-                                width="100%" height="100%" frameborder="0" scrolling="no" 
-                                src="https://www.openstreetmap.org/export/embed.html?bbox={{ $house->long - 0.005 }},{{ $house->lat - 0.005 }},{{ $house->long + 0.005 }},{{ $house->lat + 0.005 }}&layer=mapnik&marker={{ $house->lat }},{{ $house->long }}">
-                            </iframe>
-                        </div>
-                        <div class="p-5 bg-gray-50 border-t border-gray-100">
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ $house->lat }},{{ $house->long }}" 
-                               target="_blank" 
-                               class="text-actionable font-bold text-sm flex items-center justify-center gap-2 hover:underline">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                Navigate with Google Maps
-                            </a>
-                        </div>
-                    </div>
 
-                    {{-- Caretaker Contact Card --}}
-                    @if(!empty($house->caretaker_phone) && count($house->caretaker_phone) > 0)
-                        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
-
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
-                                    🔑
-                                </div>
-
-                                <div>
-                                    <h4 class="text-xs font-black uppercase text-gray-400 tracking-wider">
-                                        On-Site Caretakers
-                                    </h4>
-
-                                    <p class="text-base font-bold text-dark">
-                                        Contact Information
-                                    </p>
+                        @if($unlocked)
+                            <div class="h-64 grayscale-[0.2] hover:grayscale-0 transition duration-500">
+                                <iframe 
+                                    width="100%" height="100%" frameborder="0" scrolling="no" 
+                                    src="https://www.openstreetmap.org/export/embed.html?bbox={{ $house->long - 0.005 }},{{ $house->lat - 0.005 }},{{ $house->long + 0.005 }},{{ $house->lat + 0.005 }}&layer=mapnik&marker={{ $house->lat }},{{ $house->long }}">
+                                </iframe>
+                            </div>
+                            <div class="p-5 bg-gray-50 border-t border-gray-100">
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $house->lat }},{{ $house->long }}" 
+                                   target="_blank" 
+                                   class="text-actionable font-bold text-sm flex items-center justify-center gap-2 hover:underline">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    Navigate with Google Maps
+                                </a>
+                            </div>
+                        @else
+                            <div class="h-64 relative bg-gray-100 flex items-center justify-center overflow-hidden">
+                                <iframe 
+                                    class="w-full h-full blur-md opacity-30 pointer-events-none" 
+                                    src="https://www.openstreetmap.org/export/embed.html?bbox=37.00,-1.10,37.02,-1.08">
+                                </iframe>
+                                <div class="absolute inset-0 bg-dark/30 backdrop-blur-xs flex flex-col items-center justify-center text-center p-4">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl text-white mb-2">
+                                        🔒
+                                    </div>
+                                    <p class="text-xs font-bold text-white mb-3">Exact map coordinates locked</p>
+                                    <button @click="unlockModalOpen = true" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow">
+                                        Unlock Map View
+                                    </button>
                                 </div>
                             </div>
+                        @endif
+                    </div>
 
+                    <!-- Gated Caretaker Contact Card -->
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
+                                🔑
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                    On-Site Caretakers
+                                </h4>
+                                <p class="text-base font-bold text-dark">
+                                    Contact Information
+                                </p>
+                            </div>
+                        </div>
+
+                        @if($unlocked && !empty($house->caretaker_phone) && count($house->caretaker_phone) > 0)
                             <div class="space-y-3">
                                 @foreach($house->caretaker_phone as $contact)
                                     <div class="border border-gray-200 rounded-2xl p-4 space-y-3">
-
                                         <div>
                                             <p class="text-sm font-bold text-dark">
                                                 {{ $contact['name'] ?? 'Building Caretaker' }}
                                             </p>
-
                                             <p class="text-xs text-gray-400">
                                                 Caretaker
                                             </p>
                                         </div>
 
                                         @if(!empty($contact['phone']))
-                                            <a
-                                                href="tel:{{ $contact['phone'] }}"
-                                                class="w-full inline-flex justify-center items-center px-4 py-3 bg-bg text-dark font-bold text-xs uppercase tracking-widest rounded-xl border border-gray-200 hover:bg-dark hover:text-white transition"
-                                            >
-                                                <svg
-                                                    class="w-4 h-4 mr-2 text-actionable"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                                    />
+                                            <a href="tel:{{ $contact['phone'] }}"
+                                               class="w-full inline-flex justify-center items-center px-4 py-3 bg-bg text-dark font-bold text-xs uppercase tracking-widest rounded-xl border border-gray-200 hover:bg-dark hover:text-white transition">
+                                                <svg class="w-4 h-4 mr-2 text-actionable" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                                 </svg>
-
-                                                Call {{ $contact['name'] ?? 'Caretaker' }}
-                                                ({{ $contact['phone'] }})
+                                                Call {{ $contact['name'] ?? 'Caretaker' }} ({{ $contact['phone'] }})
                                             </a>
                                         @endif
-
                                     </div>
                                 @endforeach
                             </div>
-
-                        </div>
-                    @endif
+                        @else
+                            <div class="p-5 bg-gray-50 border border-dashed border-gray-300 rounded-2xl text-center space-y-3">
+                                <div class="space-y-1">
+                                    <p class="text-sm font-bold text-gray-700 blur-sm select-none">
+                                        John Doe: 0712 345 678
+                                    </p>
+                                    <p class="text-xs text-gray-400">
+                                        Caretaker numbers are hidden
+                                    </p>
+                                </div>
+                                <button @click="unlockModalOpen = true" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow">
+                                    Unlock Caretaker Number
+                                </button>
+                            </div>
+                        @endif
+                    </div>
 
                     <!-- WhatsApp & Viewing CTA Card -->
                     <div class="bg-primary/5 p-8 rounded-3xl border border-primary/20 relative overflow-hidden">
@@ -427,23 +469,22 @@
                         🔓
                     </div>
                     <div>
-                        <h3 class="text-xl font-extrabold text-dark tracking-tight">Unlock Full Details</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Instant access via M-Pesa STK Push</p>
+                        <h3 class="text-xl font-extrabold text-dark tracking-tight">Unlock All Houses</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Instant site-wide access via M-Pesa STK Push</p>
                     </div>
                 </div>
 
                 <div class="bg-bg border border-gray-200/80 rounded-2xl p-4 mb-6 flex justify-between items-center">
                     <div>
                         <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Unlock Fee</span>
-                        <span class="text-sm font-medium text-gray-600">Full Caretaker & Exact Details</span>
+                        <span class="text-sm font-medium text-gray-600">Full Caretaker & Exact Map Details</span>
                     </div>
                     <div class="text-right">
                         <span class="text-2xl font-black text-emerald-600">KES 100</span>
                     </div>
                 </div>
 
-                <form action="/unlock" method="POST" class="space-y-4">
-                    <!-- Required CSRF token for Laravel POST requests -->
+                <form action="{{ route('unlock') }}" method="POST" class="space-y-4">
                     @csrf
 
                     <div>
@@ -456,27 +497,21 @@
                             id="phone_number" 
                             placeholder="254712345678" 
                             required 
-                            class="w-full px-4 py-2 border rounded-md"
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm font-medium"
                         />
                     </div>
 
                     <div>
-                        <label for="amount" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-                            M-Pesa Amount
-                        </label>
                         <input 
-                        class="block text-xs font-bold mb-2"
-                            type="text" 
+                            type="hidden" 
                             name="amount" 
                             id="amount" 
-                            value=100
-                            readonly
-                            required 
+                            value="100"
                         />
                     </div>
 
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md font-bold hover:bg-green-700">
-                        Pay via M-Pesa
+                    <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20">
+                        Pay KES 100 via M-Pesa
                     </button>
                 </form>
             </div>
