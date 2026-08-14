@@ -94,6 +94,24 @@
             
             <!-- Left Main Content Column -->
             <div class="lg:col-span-2 space-y-12">
+
+                @if(!empty($house->description))
+                    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="border-b border-gray-100 pb-4">
+                            <h2 class="text-xl font-bold text-gray-800 tracking-tight">
+                                About This Property
+                            </h2>
+
+                            <p class="text-xs text-gray-400 mt-0.5">
+                                Property description
+                            </p>
+                        </div>
+
+                        <div class="text-sm text-gray-600 leading-7">
+                            {!! nl2br(e($house->description)) !!}
+                        </div>
+                    </div>
+                @endif
                 
                 @if(!empty($house->Amenities))
                     <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-8">
@@ -275,28 +293,68 @@
                         </div>
                     </div>
 
-                    <!-- Caretaker Contact Card -->
-                    @if(!empty($house->caretaker_phone) || !empty($house->caretaker_name))
+                    {{-- Caretaker Contact Card --}}
+                    @if(!empty($house->caretaker_phone) && count($house->caretaker_phone) > 0)
                         <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
+
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
                                     🔑
                                 </div>
+
                                 <div>
-                                    <h4 class="text-xs font-black uppercase text-gray-400 tracking-wider">On-Site Caretaker</h4>
-                                    <p class="text-base font-bold text-dark">{{ $house->caretaker_name ?? 'Building Caretaker' }}</p>
+                                    <h4 class="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                        On-Site Caretakers
+                                    </h4>
+
+                                    <p class="text-base font-bold text-dark">
+                                        Contact Information
+                                    </p>
                                 </div>
                             </div>
-                            
-                            @if(!empty($house->caretaker_phone))
-                                <a href="tel:{{ $house->caretaker_phone }}" 
-                                   class="w-full inline-flex justify-center items-center px-4 py-3 bg-bg text-dark font-bold text-xs uppercase tracking-widest rounded-xl border border-gray-200 hover:bg-dark hover:text-white transition">
-                                    <svg class="w-4 h-4 mr-2 text-actionable" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                    </svg>
-                                    Call Caretaker ({{ $house->caretaker_phone }})
-                                </a>
-                            @endif
+
+                            <div class="space-y-3">
+                                @foreach($house->caretaker_phone as $contact)
+                                    <div class="border border-gray-200 rounded-2xl p-4 space-y-3">
+
+                                        <div>
+                                            <p class="text-sm font-bold text-dark">
+                                                {{ $contact['name'] ?? 'Building Caretaker' }}
+                                            </p>
+
+                                            <p class="text-xs text-gray-400">
+                                                Caretaker
+                                            </p>
+                                        </div>
+
+                                        @if(!empty($contact['phone']))
+                                            <a
+                                                href="tel:{{ $contact['phone'] }}"
+                                                class="w-full inline-flex justify-center items-center px-4 py-3 bg-bg text-dark font-bold text-xs uppercase tracking-widest rounded-xl border border-gray-200 hover:bg-dark hover:text-white transition"
+                                            >
+                                                <svg
+                                                    class="w-4 h-4 mr-2 text-actionable"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                                    />
+                                                </svg>
+
+                                                Call {{ $contact['name'] ?? 'Caretaker' }}
+                                                ({{ $contact['phone'] }})
+                                            </a>
+                                        @endif
+
+                                    </div>
+                                @endforeach
+                            </div>
+
                         </div>
                     @endif
 

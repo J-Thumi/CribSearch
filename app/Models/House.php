@@ -23,7 +23,8 @@ class House extends Model
         'caretaker_name',
         'caretaker_phone',
         'status',
-        'Amenities'
+        'Amenities',
+        'description',
     ];
 
     /**
@@ -34,6 +35,7 @@ class House extends Model
         'lat' => 'float',
         'long' => 'float',
         'Amenities' => 'array',
+        'caretaker_phone' => 'array',
     ];
 
     public function scout(): BelongsTo

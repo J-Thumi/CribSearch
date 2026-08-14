@@ -14,6 +14,7 @@ use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
 
 class HouseForm
 {
@@ -43,9 +44,9 @@ class HouseForm
                         Select::make('nearest_gate')
                             ->label('Nearest JKUAT Gate')
                             ->options([
-                                'Gate A' => 'Gate A (Main/Gachororo)',
-                                'Gate B' => 'Gate B (Hospital/Agric Side)',
-                                'Gate C' => 'Gate C (Highfield Side)',
+                                'Gate A' => 'Gate A (Main)',
+                                'Gate B' => 'Gate B',
+                                'Gate C' => 'Gate C ',
                                 'Gate D' => 'Gate D',
                                 'Kiongo Gate' => 'Kiongo Gate',
                                 'Juja Stage' => 'Juja Main Stage / Flyover',
@@ -55,19 +56,36 @@ class HouseForm
                             ->placeholder('Select primary gate'),
 
 
-                        TextInput::make('caretaker_name')
-                            ->label('Caretaker Name')
-                            ->placeholder('e.g. John Doe'),
+                        Repeater::make('caretaker_phone')
+                            ->label('Caretaker Contacts')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Name')
+                                    ->placeholder('e.g. John Doe')
+                                    ->required(),
 
-                        TextInput::make('caretaker_phone')
-                            ->label('Caretaker Phone Number')
-                            ->tel()
-                            ->placeholder('0712345678'),
+                                TextInput::make('phone')
+                                    ->label('Phone Number')
+                                    ->tel()
+                                    ->placeholder('0712345678')
+                                    ->required(),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(1)
+                            ->addActionLabel('Add Another Contact')
+                            ->reorderable(false)
+                            ->collapsible(),
                         // Automatically captures the logged-in scout's ID
                         Hidden::make('scout_id')
                             ->default(auth()->id())
                             ->required(),
-                  
+
+                        Textarea::make('description')
+                            ->label('House Description')
+                            ->placeholder('Describe the property, its surroundings, accessibility, and anything else a tenant should know...')
+                            ->rows(5)
+                            ->columnSpanFull(),
+
                         TextInput::make('lat')
                             ->numeric()
                             ->required()
@@ -157,6 +175,9 @@ class HouseForm
                             ->schema([
                                 Select::make('size')
                                     ->options([
+                                        'hostel' => 'Hostel',
+                                        'single_room' => 'Single Room',
+                                        'double_room' => 'Double Room',
                                         'bedsitter' => 'Bedsitter',
                                         'studio' => 'Studio',
                                         'one_bedroom' => '1 Bedroom',
