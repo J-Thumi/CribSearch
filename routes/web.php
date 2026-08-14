@@ -21,13 +21,27 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::post('/register', [AuthController::class, 'register'])
+    ->name('register');
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
+Route::get('/me', [AuthController::class, 'me'])
+    ->middleware('auth')
+    ->name('me');
+    
 Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
 
 
 // Protected routes (Requires Sanctum Bearer Token)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::post('/unlock', [StkPushController::class, 'initiateStkPush'])->name('unlock');
 
 });

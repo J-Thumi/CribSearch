@@ -203,9 +203,9 @@
                 authMobile.classList.remove('hidden');
             }
 
-            // Fetch user info from /api/me
+            // Fetch user info from /me
             try {
-                const response = await fetch('/api/me', {
+                const response = await fetch('/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
