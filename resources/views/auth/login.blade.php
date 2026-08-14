@@ -3,6 +3,11 @@
 
 @section('title', 'Sign In')
 
+{{-- Step 1: Ensure CSRF Meta Tag is present if missing from layouts.auth --}}
+@push('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
+
 @section('content')
 <div class="bg-white rounded-2xl shadow-xl border border-amber-100 p-8">
     <!-- Header -->
@@ -21,6 +26,9 @@
 
     <!-- Login Form -->
     <form id="loginForm" class="space-y-5">
+        {{-- Step 2: Include Blade CSRF field as fallback --}}
+        @csrf
+
         <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
             <input type="email" id="email" name="email" required
@@ -74,7 +82,6 @@
         const isPassword = input.type === 'password';
         input.type = isPassword ? 'text' : 'password';
 
-        // SVG paths for open eye vs slashed eye
         const eyeOpenPath = `
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -86,6 +93,7 @@
 
         icon.innerHTML = isPassword ? eyeClosedPath : eyeOpenPath;
     }
+
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -105,12 +113,20 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         password: document.getElementById('password').value,
     };
 
+    // Grab CSRF token from the meta tag or form input
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content 
+                     || document.querySelector('input[name="_token"]')?.value;
+
     try {
-        const response = await fetch('/api/login', {
+        // Optional: If using Sanctum CSRF protection, fetch cookie first
+        await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' }).catch(() => {});
+
+        const response = await fetch('/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken // Pass the CSRF Token header
             },
             body: JSON.stringify(payload)
         });
@@ -118,13 +134,11 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const data = await response.json();
 
         if (response.ok) {
-            // Save token and redirect
-            localStorage.setItem('auth_token', data.access_token);
+            if (data.access_token) {
+                localStorage.setItem('auth_token', data.access_token);
+            }
             
-            //TODO redirect to the previous page or a default page after login. For now, redirecting to /houses
             const redirectTo = '/houses';
-
-            // Redirect user back to where they came from
             window.location.href = redirectTo;
 
         } else {
