@@ -54,7 +54,9 @@
                     </label>
                     <select name="size" id="size" onchange="this.form.submit()" class="w-full bg-bg border border-gray-200 text-dark text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-primary font-medium">
                         <option value="">All Unit Types</option>
-                        <option value="bedsitter" {{ request('size') == 'bedsitter' ? 'selected' : '' }}>Bedsitter</option>
+                        <option value="single_room" {{ request('size') == 'single_room' ? 'selected' : '' }}>Single Room</option>
+                        <option value="hostel" {{ request('size') == 'hostel' ? 'selected' : '' }}>Hostel</option>
+                        <option value="double_room" {{ request('size') == 'double_room' ? 'selected' : '' }}>Double Room</option>
                         <option value="one_bedroom" {{ request('size') == 'one_bedroom' ? 'selected' : '' }}>1 Bedroom</option>
                         <option value="two_bedroom" {{ request('size') == 'two_bedroom' ? 'selected' : '' }}>2 Bedroom</option>
                         <option value="three_bedroom" {{ request('size') == 'three_bedroom' ? 'selected' : '' }}>3 Bedroom</option>
