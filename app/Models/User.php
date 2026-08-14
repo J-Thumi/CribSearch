@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -28,7 +27,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
-        "is_admin",
+        'is_admin',
     ];
 
     /**
@@ -54,15 +53,32 @@ class User extends Authenticatable implements FilamentUser
             'is_admin' => 'boolean',
         ];
     }
+
     public function canAccessPanel(Panel $panel): bool
     { 
         return (bool) $this->is_admin;
     }
 
-
     public function houses(): HasMany
     {
-        // We specify 'scout_id' as the foreign key on the houses table
         return $this->hasMany(House::class, 'scout_id');
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Check if the user has paid to unlock all house details.
+     */
+    public function hasUnlockedAllHouses(): bool
+    {
+        if ($this->is_admin) {
+            return true;
+        }
+
+        // Call the scope as ->paid() instead of ->scopePaid()
+        return $this->purchases()->paid()->exists();
     }
 }
