@@ -155,6 +155,7 @@
                     <ul class="space-y-4 text-xs font-medium uppercase tracking-wider">
                         <li><a href="{{ route('houses.index') }}" class="hover:text-primary transition">All Listings</a></li>
                         <li><a href="/privacy" class="hover:text-primary transition">Privacy Policy</a></li>
+                        <li><a href="/terms" class="hover:text-primary transition">Terms of Service</a></li>
                         <li><a href="/admin" class="text-primary hover:text-white transition">Scout Portal</a></li>
                     </ul>
                 </div>

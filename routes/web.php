@@ -39,7 +39,7 @@ Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
 
-
+Route::view('/terms', 'terms')->name('terms');
 // Protected routes (Requires Sanctum Bearer Token)
 Route::middleware('auth')->group(function () {
     Route::post('/unlock', [StkPushController::class, 'initiateStkPush'])->name('unlock');
