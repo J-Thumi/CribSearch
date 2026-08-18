@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HouseUnlock;
 use App\Models\Invoice;
 use App\Models\Purchase;
 use App\Services\BitikaService;
@@ -35,7 +36,15 @@ class StkPushController extends Controller
             // 1. Validate incoming request
             $validated = $request->validate([
                 'phone_number' => ['required', 'string', 'regex:/^(254|\+254|0)?(7|1)\d{8}$/'],
+                'text_phone_number' => ['required', 'string', 'regex:/^(254|\+254|0)?(7|1)\d{8}$/'],
                 'amount'       => ['required', 'numeric', 'min:10', 'max:10000'],
+            ]);
+
+            HouseUnlock::create([
+                'phone_number' => $validated['phone_number'],
+                'text_phone_number' => $validated['text_phone_number'],
+                'house_id'     => $request->input('house_id'),
+                'user_id'      => auth()->id() ?? null,
             ]);
 
             // 2. Create Blink Lightning Invoice
@@ -49,13 +58,13 @@ class StkPushController extends Controller
                     'payment_hash' => $invoice['payment_hash'] ?? null,
                     'payment_request' => $invoice['payment_request'] ?? null,
                     'amount_msat'          => $validated['amount'],
-                    'status'          => Invoice::STATUS_PENDING,
-                    
+                    'status'          => Invoice::STATUS_PENDING,                    
                 ]);
 
                 Purchase::create([
                     'user_id'    => auth()->id() ?? null,
                     'invoice_id' => $invoice->id,
+                    'house_id'   => $request->input('house_id'),
                 ]);
 
                 $bolt11String = is_array($invoice) 
