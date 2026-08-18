@@ -11,69 +11,141 @@
 
         <form action="{{ route('houses.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-    <!-- Existing Search Input -->
-    <div>
-        <label class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Search</label>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Property name..." 
-               class="w-full bg-bg border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary">
-    </div>
+            <!-- Existing Search Input -->
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Search</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Property name..." 
+                    class="w-full bg-bg border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary">
+            </div>
 
-    <!-- NEW: Gate Filter Dropdown -->
-    <div>
-        <label class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Campus Gate</label>
-        <select name="gate" onchange="this.form.submit()" 
-                class="w-full bg-bg border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-dark focus:outline-none focus:border-primary">
-            <option value="">All Gates / Locations</option>
-            @foreach(['Gate A', 'Gate B', 'Gate C', 'Juja Stage', 'Gate D', 'Kiongo Gate' ,'Gachororo'] as $gate)
-                <option value="{{ $gate }}" {{ request('gate') == $gate ? 'selected' : '' }}>
-                    📍 {{ $gate }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+            <!-- NEW: Gate Filter Dropdown -->
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Campus Gate</label>
+                <select name="gate" onchange="this.form.submit()" 
+                        class="w-full bg-bg border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-dark focus:outline-none focus:border-primary">
+                    <option value="">All Gates / Locations</option>
+                    @foreach(['Gate A', 'Gate B', 'Gate C', 'Juja Stage', 'Gate D', 'Kiongo Gate' ,'Gachororo'] as $gate)
+                        <option value="{{ $gate }}" {{ request('gate') == $gate ? 'selected' : '' }}>
+                            📍 {{ $gate }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-    <!-- Submit & Reset Buttons -->
-    <div class="flex items-end gap-2">
-        <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-dark transition text-sm">
-            Filter
-        </button>
-        @if(request()->hasAny(['search', 'gate']))
-            <a href="{{ route('houses.index') }}" class="bg-gray-100 text-gray-600 font-bold py-3 px-4 rounded-xl hover:bg-gray-200 transition text-sm">
-                Reset
-            </a>
-        @endif
-    </div>
-</form>
-        <!-- Filter Bar -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-10">
-            <form action="{{ route('houses.index') }}" method="GET" class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                
-                <div class="w-full sm:w-auto flex-1">
-                    <label for="size" class="block text-xs font-bold uppercase tracking-wider text-dark mb-2">
-                        Filter by Unit Type
-                    </label>
-                    <select name="size" id="size" onchange="this.form.submit()" class="w-full bg-bg border border-gray-200 text-dark text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-primary font-medium">
-                        <option value="">All Unit Types</option>
-                        <option value="single_room" {{ request('size') == 'single_room' ? 'selected' : '' }}>Single Room</option>
-                        <option value="hostel" {{ request('size') == 'hostel' ? 'selected' : '' }}>Hostel</option>
-                        <option value="double_room" {{ request('size') == 'double_room' ? 'selected' : '' }}>Double Room</option>
-                        <option value="one_bedroom" {{ request('size') == 'one_bedroom' ? 'selected' : '' }}>1 Bedroom</option>
-                        <option value="two_bedroom" {{ request('size') == 'two_bedroom' ? 'selected' : '' }}>2 Bedroom</option>
-                        <option value="three_bedroom" {{ request('size') == 'three_bedroom' ? 'selected' : '' }}>3 Bedroom</option>
-                        <option value="single_room" {{ request('size') == 'single_room' ? 'selected' : '' }}>Single Room</option>
-                        <option value="own_compound" {{ request('size') == 'own_compound' ? 'selected' : '' }}>Own Compound</option>
-                    </select>
-                </div>
-
-                @if(request('size'))
-                    <div class="w-full sm:w-auto flex items-end pt-2 sm:pt-6">
-                        <a href="{{ route('houses.index') }}" class="w-full sm:w-auto px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-600 hover:text-white transition-all text-center">
-                            Reset Filter
-                        </a>
-                    </div>
+            <!-- Submit & Reset Buttons -->
+            <div class="flex items-end gap-2">
+                <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-dark transition text-sm">
+                    Filter
+                </button>
+                @if(request()->hasAny(['search', 'gate']))
+                    <a href="{{ route('houses.index') }}" class="bg-gray-100 text-gray-600 font-bold py-3 px-4 rounded-xl hover:bg-gray-200 transition text-sm">
+                        Reset
+                    </a>
                 @endif
+            </div>
+        </form>
 
-            </form>
+        <!-- Filter Cards Container -->
+        <!-- Visual Filter Cards -->
+        <div class="mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-dark">
+                    Filter by Unit Type
+                </h3>
+                
+                @if(request('size'))
+                    <a href="{{ route('houses.index') }}" class="text-xs font-bold text-red-600 hover:text-red-800 transition-colors flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Reset Filter
+                    </a>
+                @endif
+            </div>
+
+            <!-- Responsive Grid with Larger Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                @php
+                    $unitTypes = [
+                        'single_room' => [
+                            'label' => 'Single Room',
+                            'image' => 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'hostel' => [
+                            'label' => 'Hostel',
+                            'image' => 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'bedsitter' => [
+                            'label' => 'Bedsitter',
+                            'image' => 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'double_room' => [
+                            'label' => 'Double Room',
+                            'image' => 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'one_bedroom' => [
+                            'label' => '1 Bedroom',
+                            'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'two_bedroom' => [
+                            'label' => '2 Bedroom',
+                            'image' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'three_bedroom' => [
+                            'label' => '3 Bedroom',
+                            'image' => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        'own_compound' => [
+                            'label' => 'Own Compound',
+                            'image' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80'
+                        ],
+                    ];
+                @endphp
+
+                @foreach($unitTypes as $key => $data)
+                    @php
+                        $isActive = request('size') === $key;
+                        // Preserve existing query params except page when toggling
+                        $queryParams = array_merge(request()->except('page'), ['size' => $key]);
+                        $url = $isActive ? route('houses.index', request()->except(['size', 'page'])) : route('houses.index', $queryParams);
+                    @endphp
+
+                    <a href="{{ $url }}" 
+                    class="group relative h-36 sm:h-44 rounded-2xl overflow-hidden border-2 transition-all duration-300 transform active:scale-95 shadow-sm hover:shadow-xl
+                            {{ $isActive 
+                                ? 'border-primary ring-4 ring-primary/20 scale-[1.02]' 
+                                : 'border-transparent hover:border-white/40' 
+                            }}">
+                        
+                        <!-- Background Image with Zoom Effect -->
+                        <img src="{{ $data['image'] }}" 
+                            alt="{{ $data['label'] }}" 
+                            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+
+                        <!-- Gradient Overlay for Contrast -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 {{ $isActive ? 'opacity-90' : 'opacity-70 group-hover:opacity-80' }}"></div>
+
+                        <!-- Active Status Badge (Top-Right) -->
+                        @if($isActive)
+                            <div class="absolute top-3 right-3 bg-primary text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 z-10">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                Selected
+                            </div>
+                        @endif
+
+                        <!-- Content Overlay (Bottom-Left) -->
+                        <div class="absolute bottom-0 inset-x-0 p-4 text-white z-10 flex flex-col justify-end">
+                            <span class="text-base sm:text-lg font-bold leading-tight drop-shadow-md group-hover:translate-x-1 transition-transform duration-200">
+                                {{ $data['label'] }}
+                            </span>
+                            
+                            <span class="text-[11px] font-medium text-gray-200 mt-1 opacity-90">
+                                {{ $isActive ? 'Click to clear filter' : 'Filter units' }} →
+                            </span>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
