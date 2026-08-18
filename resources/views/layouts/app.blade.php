@@ -186,47 +186,52 @@
 
     // Check Sanctum Auth State on page load
     document.addEventListener("DOMContentLoaded", async function() {
-        const token = localStorage.getItem('auth_token');
-
-        if (token) {
-            // Show Authenticated state, Hide Guest state
-            document.getElementById('guest-nav-desktop')?.classList.add('hidden');
-            document.getElementById('guest-nav-mobile')?.classList.add('hidden');
-            
-            const authDesktop = document.getElementById('auth-nav-desktop');
-            const authMobile = document.getElementById('auth-nav-mobile');
-
-            if (authDesktop) {
-                authDesktop.classList.remove('hidden');
-                authDesktop.classList.add('flex');
-            }
-            if (authMobile) {
-                authMobile.classList.remove('hidden');
-            }
-
-            // Fetch user info from /me
-            try {
-                const response = await fetch('/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const nameSpan = document.getElementById('nav-user-name');
-                    if (nameSpan && data.user) {
-                        nameSpan.textContent = data.user.name.split(' ')[0]; // Show first name
-                    }
-                } else if (response.status === 401) {
-                    // Token expired or revoked
-                    localStorage.removeItem('auth_token');
-                    window.location.reload();
+        // Check if the user is authenticated using the Laravel session
+        try {
+            const response = await fetch('/me', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json'
                 }
-            } catch (err) {
-                console.error("Auth check failed:", err);
+            });
+
+            if (response.ok) {
+                // User is authenticated
+                document.getElementById('guest-nav-desktop')?.classList.add('hidden');
+                document.getElementById('guest-nav-mobile')?.classList.add('hidden');
+
+                const authDesktop = document.getElementById('auth-nav-desktop');
+                const authMobile = document.getElementById('auth-nav-mobile');
+
+                if (authDesktop) {
+                    authDesktop.classList.remove('hidden');
+                    authDesktop.classList.add('flex');
+                }
+
+                if (authMobile) {
+                    authMobile.classList.remove('hidden');
+                }
+
+                const data = await response.json();
+
+                const nameSpan = document.getElementById('nav-user-name');
+
+                if (nameSpan && data.user) {
+                    nameSpan.textContent = data.user.name.split(' ')[0];
+                }
+
+            } else if (response.status === 401) {
+                // User is not authenticated
+                document.getElementById('auth-nav-desktop')?.classList.add('hidden');
+                document.getElementById('auth-nav-mobile')?.classList.add('hidden');
+
+                document.getElementById('guest-nav-desktop')?.classList.remove('hidden');
+                document.getElementById('guest-nav-mobile')?.classList.remove('hidden');
             }
+
+        } catch (err) {
+            console.error('Auth check failed:', err);
         }
     });
 
