@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\HouseUnlock;
+use App\Models\IntaSendInvoice;
 use App\Models\Invoice;
 use App\Models\Purchase;
 use App\Services\BitikaService;
 use App\Services\BlinkService;
+use App\Services\IntasendService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -15,17 +17,22 @@ use Exception;
 
 class StkPushController extends Controller
 {
+    protected IntasendService $intasend;
     protected BlinkService $blink;
     protected BitikaService $bitika;
 
-    public function __construct(BlinkService $blink, BitikaService $bitika)
+    public function __construct(IntasendService $intasend, BlinkService $blink, BitikaService $bitika)
     {
+        $this->intasend = $intasend;
         $this->blink = $blink;
         $this->bitika = $bitika;
     }
 
     public function initiateStkPush(Request $request): JsonResponse
     {
+        // This will be used if Bitika is the payment processor. If Intasend is used, this method can be removed or modified accordingly.
+
+
         Log::info('STK Push Initiated', [
             'phone'  => $request->phone_number,
             'amount' => $request->amount,
@@ -154,4 +161,75 @@ class StkPushController extends Controller
             ], 500);
         }
     }
-}
+
+    public function initiateIntaStkPush(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'phone_number'      => 'required|string',
+            'text_phone_number' => 'nullable|string',
+            'amount'            => 'required|numeric|min:1',
+            'house_id'          => 'required|string',
+        ]);
+
+        try {
+            $user = auth('sanctum')->user() ?? auth()->user();
+            $apiRef = 'House-' . $validated['house_id'] . '-' . time();
+
+            // 1. Create the HouseUnlock record
+            $houseUnlock = HouseUnlock::create([
+                'phone_number'      => $validated['phone_number'],
+                'text_phone_number' => $validated['text_phone_number'] ?? $validated['phone_number'],
+                'house_id'          => $validated['house_id'],
+                'user_id'           => $user?->id,
+            ]);
+            
+
+            // 2. Trigger IntaSend STK Push
+            $response = $this->intasend->initiateStkPush(
+                amount: $validated['amount'],
+                phoneNumber: $validated['phone_number'],
+                apiRef: $apiRef,
+                email: $user?->email,
+                name: $user?->name
+            );
+
+            // Cast object/stdClass to array
+            $responseArray = (array) $response;
+
+            // Extract tracking ID safely
+            $trackingId = $responseArray['invoice']->invoice_id 
+                        ?? $responseArray['invoice']['invoice_id'] 
+                        ?? $responseArray['tracking_id'] 
+                        ?? $responseArray['invoice_id'] 
+                        ?? $response->invoice->invoice_id 
+                        ?? null;
+
+            if (!$trackingId) {
+                throw new \Exception('Failed to retrieve tracking ID from IntaSend response.');
+            }
+
+            // 3. Save invoice record
+            IntaSendInvoice::create([
+                'user_id'         => $user?->id,
+                'house_unlock_id' => $houseUnlock->id,
+                'tracking_id'     => $trackingId,
+                'api_ref'         => $apiRef,
+                'phone_number'    => $validated['phone_number'],
+                'amount'          => $validated['amount'],
+                'status'          => 'PENDING',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'STK push sent to your phone. Please enter your M-Pesa PIN.',
+                'data'    => $response,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+    }
