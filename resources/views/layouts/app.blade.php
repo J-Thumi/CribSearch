@@ -295,24 +295,24 @@
 
     // Logout Handler Function
     async function handleLogout() {
-        const token = localStorage.getItem('auth_token');
-        
-        if (token) {
-            try {
-                await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-            } catch (err) {
-                console.error("Logout request error:", err);
-            }
+        // Get the CSRF token from the meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+        try {
+            await fetch('/logout', { // Ensure route matches your web.php logout route
+                method: 'POST',
+                credentials: 'same-origin', // Sends session cookies along
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
+        } catch (err) {
+            console.error("Logout request error:", err);
         }
 
-        // Clear local token and redirect to login
+        // Clear local storage and redirect
         localStorage.removeItem('auth_token');
         window.location.href = '/login';
     }
