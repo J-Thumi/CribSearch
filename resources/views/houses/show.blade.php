@@ -225,8 +225,13 @@
                                 @foreach($unit['images'] as $img)
                                     <div class="relative overflow-hidden rounded-xl h-40 md:h-52 bg-bg border border-gray-100 group/img">
                                         <a href="{{ asset('storage/'.$img) }}" target="_blank">
-                                            <img src="{{ asset('storage/'.$img) }}" 
-                                                 class="w-full h-full object-cover transform group-hover/img:scale-110 transition duration-700">
+                                            <img 
+                                                src="{{ asset('storage/'.$img) }}"
+                                                alt="{{ $house->name }} - {{ str_replace('_', ' ', $unit['size']) }}"
+                                                loading="lazy"
+                                                decoding="async"
+                                                class="w-full h-full object-cover transform group-hover/img:scale-110 transition duration-700"
+                                            >
                                             <div class="absolute inset-0 bg-dark/20 opacity-0 group-hover/img:opacity-100 transition duration-300 flex items-center justify-center">
                                                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
                                             </div>
@@ -283,7 +288,13 @@
                                                 @click="activeTour = {{ $tourIndex }}; window.initPannellumById('tour-{{ $loop->parent->index ?? 0 }}-{{ $tourIndex }}')"
                                                 :class="activeTour === {{ $tourIndex }} ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-gray-200'"
                                                 class="relative flex-shrink-0 w-20 h-14 rounded-lg border-2 overflow-hidden transition-all duration-200 bg-gray-100">
-                                                <img src="{{ asset('storage/' . $image_path) }}" class="w-full h-full object-cover brightness-90">
+                                                <img 
+                                                    src="{{ asset('storage/' . $image_path) }}" 
+                                                    alt="360° tour scene {{ $tourIndex + 1 }}"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    class="w-full h-full object-cover brightness-90"
+                                                >
                                                 <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white bg-black/30">
                                                     Scene {{ $tourIndex + 1 }}
                                                 </div>
@@ -541,10 +552,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                initSinglePannellum(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        rootMargin: '300px'
+    });
+
     document.querySelectorAll('.panorama-viewer').forEach(function (viewer) {
-        if (viewer.style.display !== 'none') {
-            initSinglePannellum(viewer);
-        }
+        observer.observe(viewer);
     });
 });
 
