@@ -105,7 +105,12 @@
         <!-- Footer Redirect -->
         <p class="text-center text-xs text-gray-500 mt-8 pt-6 border-t border-gray-100 font-medium">
             Don't have an account?
-            <a href="/register" class="font-bold text-amber-600 hover:text-amber-700 transition-colors underline-offset-2 hover:underline">Create an account</a>
+            <a
+                href="{{ route('register') }}?redirect={{ urlencode(request('redirect', '/houses')) }}"
+                class="font-bold text-amber-600 hover:text-amber-700 transition-colors underline-offset-2 hover:underline"
+            >
+                Create an account
+            </a>
         </p>
     </div>
 </div>
@@ -145,17 +150,20 @@
         btnSpinner.classList.remove('hidden');
         errorAlert.classList.add('hidden');
 
+        // Extract the 'redirect' param from the current URL if available
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect') || window.location.href;
+
         const payload = {
             email: document.getElementById('email').value,
             password: document.getElementById('password').value,
+            redirect: redirectUrl, // <--- Sends '/houses/111' to backend
         };
 
-        // Grab CSRF token from the meta tag or form input
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content 
-                         || document.querySelector('input[name="_token"]')?.value;
+                        || document.querySelector('input[name="_token"]')?.value;
 
         try {
-            // Optional: If using Sanctum CSRF protection, fetch cookie first
             await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' }).catch(() => {});
 
             const response = await fetch('/login', {
@@ -163,7 +171,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken // Pass the CSRF Token header
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify(payload)
             });
@@ -171,34 +179,26 @@
             const data = await response.json();
 
             if (response.ok) {
-                if (data.access_token) {
-                    localStorage.setItem('auth_token', data.access_token);
-                }
-                
-                const redirectTo = '/houses';
-                window.location.href = redirectTo;
+                                
+                const params = new URLSearchParams(window.location.search);
+                const redirectTo = params.get('redirect') || '/houses';
 
+                window.location.href = redirectTo;
             } else {
                 const message = data.message || 'Invalid credentials. Please try again.';
-                if (errorMessage) {
+                if (typeof errorMessage !== 'undefined' && errorMessage) {
                     errorMessage.textContent = message;
-                } else {
+                } else if (typeof errorAlert !== 'undefined' && errorAlert) {
                     errorAlert.textContent = message;
+                    errorAlert.classList.remove('hidden');
                 }
-                errorAlert.classList.remove('hidden');
             }
         } catch (err) {
             const message = 'A network error occurred. Please try again later.';
-            if (errorMessage) {
-                errorMessage.textContent = message;
-            } else {
+            if (typeof errorAlert !== 'undefined' && errorAlert) {
                 errorAlert.textContent = message;
+                errorAlert.classList.remove('hidden');
             }
-            errorAlert.classList.remove('hidden');
-        } finally {
-            submitBtn.disabled = false;
-            btnText.classList.remove('hidden');
-            btnSpinner.classList.add('hidden');
         }
     });
 </script>

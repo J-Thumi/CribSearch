@@ -34,15 +34,20 @@ class AuthController extends Controller
             'is_admin' => false,
         ]);
 
-        // Log the newly registered user into the web session
         Auth::login($user);
 
-        // Prevent session fixation
         $request->session()->regenerate();
 
+        $redirect = $request->input('redirect');
+
+        if (!$redirect || !str_starts_with($redirect, '/')) {
+            $redirect = route('houses.index');
+        }
+
         return response()->json([
-            'message' => 'User registered successfully',
-            'user'    => $user,
+            'message'  => 'User registered successfully',
+            'user'     => $user,
+            'redirect' => $redirect,
         ], 201);
     }
 
@@ -54,6 +59,7 @@ class AuthController extends Controller
         $fields = $request->validate([
             'email'    => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'redirect' => ['nullable', 'string'],
         ]);
 
         if (!Auth::attempt([
@@ -68,9 +74,15 @@ class AuthController extends Controller
         // Prevent session fixation
         $request->session()->regenerate();
 
+        // Prioritize the explicitly passed redirect URL, then session intended, then fallback
+        $redirectTarget = $request->input('redirect') 
+            ?? session()->pull('url.intended') 
+            ?? route('houses.index');
+
         return response()->json([
-            'message' => 'Logged in successfully',
-            'user'    => Auth::user(),
+            'message'  => 'Logged in successfully',
+            'user'     => Auth::user(),
+            'redirect' => $redirectTarget,
         ]);
     }
 

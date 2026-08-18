@@ -161,11 +161,15 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     btnSpinner.classList.remove('hidden');
     errorAlert.classList.add('hidden');
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect') || window.location.href;
+
     const payload = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
         password: document.getElementById('password').value,
         password_confirmation: document.getElementById('password_confirmation').value,
+        redirect: redirectUrl || '/houses',
     };
 
     // CSRF token retrieval
@@ -186,10 +190,10 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         const data = await response.json();
 
         if (response.ok) {
-            localStorage.setItem('auth_token', data.access_token);
 
-            // Redirect to destination
-            const redirectTo = '/houses';
+            const params = new URLSearchParams(window.location.search);
+            const redirectTo = params.get('redirect') || '/houses';
+
             window.location.href = redirectTo;
         } else {
             // Render specific validation error message if available

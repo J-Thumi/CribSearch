@@ -108,12 +108,20 @@
                 <div class="flex flex-wrap sm:flex-nowrap gap-3">
                     @if(!$unlocked)
                         <button 
-                            @click="unlockModalOpen = true"
+                            @click="
+                                @auth
+                                    unlockModalOpen = true
+                                @else
+                                    window.location.href = '{{ route('login', ['redirect' => url()->current()]) }}'
+                                @endauth
+                            "
                             type="button"
                             class="flex-1 sm:flex-none inline-flex items-center justify-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md hover:shadow-lg">
+                            
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2v6a2 2 0 00-2 2z"/>
                             </svg>
+
                             Unlock Details (KES 250)
                         </button>
                     @else
@@ -126,7 +134,7 @@
                     @endif
 
                     <a href="{{ route('houses.index', ['scout' => $house->scout_id]) }}" 
-                       class="inline-flex items-center justify-center px-4 py-3.5 bg-slate-100 border border-slate-200/80 text-dark font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-200 transition">
+                    class="inline-flex items-center justify-center px-4 py-3.5 bg-slate-100 border border-slate-200/80 text-dark font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-200 transition">
                         <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
@@ -134,7 +142,7 @@
                     </a>
 
                     <a href="tel:{{ $house->contact_number }}" 
-                       class="inline-flex items-center justify-center px-5 py-3.5 bg-primary hover:bg-dark text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-sm hover:shadow">
+                    class="inline-flex items-center justify-center px-5 py-3.5 bg-primary hover:bg-dark text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-sm hover:shadow">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
@@ -646,14 +654,14 @@
                         <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 flex justify-between items-center">
                             <div>
                                 <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Unlock Fee</span>
-                                <span class="text-xs font-medium text-slate-600">Lifetime Access</span>
+                                <span class="text-xs font-medium text-slate-600">The house details will be sent to your number via sms</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-2xl font-black text-emerald-600">KES 250</span>
                             </div>
                         </div>
 
-                        <form @submit.prevent="submitStkPush($event)" action="{{ route('unlock') }}" method="POST" class="space-y-4">
+                        <form @submit.prevent="submitStkPush($event)" action="{{ route('unlock', $house) }}" method="POST" class="space-y-4">
                             @csrf
                             <input type="hidden" name="house_id" value="{{ $house->id }}">
                             <input type="hidden" name="amount" value="250">
