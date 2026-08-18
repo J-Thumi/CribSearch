@@ -14,6 +14,11 @@ return [
         'base_url' => env('BITIKA_BASE_URL'),
     ],
 
+    'intasend' => [
+        'secret_key' => env('INTASEND_SECRET_KEY'),
+        'publishable_key' => env('INTASEND_PUBLISHABLE_KEY'),
+        'test_mode' => env('INTASEND_TEST_MODE', true),
+    ],
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
