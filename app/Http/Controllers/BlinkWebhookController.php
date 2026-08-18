@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Purchase;
 use App\Services\TelegramService;
+use App\Services\UjumbeSMS;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -106,8 +107,10 @@ class BlinkWebhookController extends Controller
         ]);
         Log::info('Invoice marked as paid', ['invoice_id' => $invoice->id]);
 
-        // Find the associated purchase
-        $purchase = Purchase::where('invoice_id', $invoice->id)->first();
+        // Find the associated purchase and eager-load houseUnlock + house
+        $purchase = Purchase::with(['houseUnlock.house'])
+            ->where('invoice_id', $invoice->id)
+            ->first();
         
         if (!$purchase) {
             Log::error('No purchase record found for paid invoice', [
@@ -117,12 +120,69 @@ class BlinkWebhookController extends Controller
             return response()->json(['error' => 'Purchase not found'], 500);
         }
 
-        
+        $this->sendHouseInfo($purchase);
 
         return response()->json([
             'status' => 'success',
             'invoice_id' => $invoice->id,
             'user_notified' => true
         ]);
+    }
+
+    public function sendHouseInfo(Purchase $purchase){
+
+        $ujumbe= new UjumbeSMS();
+        // This function sends the house unlock information to the user via Ujumbe SMS after a successful payment. It gets the house unlock record associated with the purchase and sends the caretaker's phone number and location to the user's phone number.
+
+        $houseUnlock = $purchase->houseUnlock;
+
+        if (!$houseUnlock) {
+            Log::error('No house unlock record found for purchase', [
+                'purchase_id' => $purchase->id,
+                'user_id' => $purchase->user_id,
+                'house_id' => $purchase->house_id ?? null,
+            ]);
+            return;
+        }
+
+        $house = $houseUnlock->house;
+
+        if (!$house) {
+            Log::error('Associated house details missing for unlock record', [
+                'house_unlock_id' => $houseUnlock->id,
+                'house_id' => $houseUnlock->house_id
+            ]);
+            return;
+        }
+
+        $caretakerPhone = $house?->caretaker_phone;
+        $lat = $house?->lat;
+        $long = $house?->long;
+        $location = "https://www.google.com/maps?q={$lat},{$long}";
+        $scoutPhone = $house?->contact_number;
+
+        if (!$caretakerPhone || !$lat || !$long) {
+            Log::error('Caretaker phone or location missing for house', [
+                'house_id' => $houseUnlock->house_id,
+                'caretaker_phone' => $caretakerPhone,
+                'location' => $location
+            ]);
+
+            $ujumbe->send($houseUnlock->text_phone_number, "Your house is now unlocked. However, caretaker phone number or location is missing. Please contact support for assistance. Scout Phone: $scoutPhone");
+            return;
+        }
+        $message = "Caretaker: {$caretakerPhone[0]['phone']}, Location: {$location}. If you want to be taken to the house, call scout at {$scoutPhone}.";
+
+        $ujumbe->send($houseUnlock->text_phone_number, $message);
+
+        Log::info('House unlock information sent to user', [
+            'user_id' => $purchase->user_id,
+            'house_id' => $houseUnlock->house_id,
+            'phone_number' => $houseUnlock->text_phone_number,
+            'caretaker_phone' => $caretakerPhone,
+            'location' => $location
+        ]);
+        return;
+
     }
 }
