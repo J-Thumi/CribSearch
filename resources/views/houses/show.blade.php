@@ -37,7 +37,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
-                        Unlock Details (KES 100)
+                        Unlock Details (KES 250)
                     </button>
                 @else
                     <div class="inline-flex items-center justify-center px-6 py-4 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold rounded-xl text-sm">
@@ -469,8 +469,8 @@
                         🔓
                     </div>
                     <div>
-                        <h3 class="text-xl font-extrabold text-dark tracking-tight">Unlock All Houses</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Instant site-wide access via M-Pesa STK Push</p>
+                        <h3 class="text-xl font-extrabold text-dark tracking-tight">Locked infomation about this house will be sent to the number you specify via text message once payment is confirmed.</h3>
+                        <!-- <p class="text-xs text-gray-400 mt-0.5">Instant site-wide access via M-Pesa STK Push</p> -->
                     </div>
                 </div>
 
@@ -480,13 +480,14 @@
                         <span class="text-sm font-medium text-gray-600">Full Caretaker & Exact Map Details</span>
                     </div>
                     <div class="text-right">
-                        <span class="text-2xl font-black text-emerald-600">KES 100</span>
+                        <span class="text-2xl font-black text-emerald-600">KES 250</span>
                     </div>
                 </div>
 
                 <form action="{{ route('unlock') }}" method="POST" class="space-y-4">
                     @csrf
 
+                    <input type="hidden" name="house_id" value="{{ $house->id }}">
                     <div>
                         <label for="phone_number" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
                             M-Pesa Phone Number
@@ -502,16 +503,30 @@
                     </div>
 
                     <div>
+                        <label for="text_phone_number" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                             Phone Number To receive the caretaker & map details
+                        </label>
+                        <input 
+                            type="text" 
+                            name="text_phone_number" 
+                            id="text_phone_number" 
+                            placeholder="254712345678" 
+                            required 
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm font-medium"
+                        />
+                    </div>
+
+                    <div>
                         <input 
                             type="hidden" 
                             name="amount" 
                             id="amount" 
-                            value="100"
+                            value="3030"
                         />
                     </div>
 
                     <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20">
-                        Pay KES 100 via M-Pesa
+                        Pay KES 250 via M-Pesa
                     </button>
                 </form>
             </div>
