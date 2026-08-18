@@ -3,11 +3,14 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\StkPushController;
+use App\Models\House;
 // use App\Models\House;
 use Illuminate\Support\Facades\Route;
-
 Route::get('/', function () {
-    return view('welcome');
+    // Fetch the latest featured/active houses (limit to 6 for the homepage)
+    $houses = House::latest()->take(3)->get();
+
+    return view('welcome', compact('houses'));
 });
 
 Route::get('/houses', [HouseController::class, 'index'])->name('houses.index');
