@@ -12,6 +12,12 @@
         lightboxOpen: false,
         activeImages: [],
         currentIndex: 0,
+
+        // STK Feedback State
+        stkStatus: 'idle', // 'idle' | 'loading' | 'success' | 'error'
+        stkMessage: '',
+        stkErrors: [],
+
         openLightbox(images, index) {
             this.activeImages = images;
             this.currentIndex = index;
@@ -26,9 +32,54 @@
             if (this.activeImages.length > 0) {
                 this.currentIndex = (this.currentIndex - 1 + this.activeImages.length) % this.activeImages.length;
             }
+        },
+        resetStkState() {
+            this.stkStatus = 'idle';
+            this.stkMessage = '';
+            this.stkErrors = [];
+        },
+        closeModal() {
+            this.unlockModalOpen = false;
+            setTimeout(() => this.resetStkState(), 300);
+        },
+        async submitStkPush(e) {
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            this.stkStatus = 'loading';
+            this.stkMessage = '';
+            this.stkErrors = [];
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || formData.get('_token')
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    this.stkStatus = 'success';
+                    this.stkMessage = result.message || 'STK Push sent successfully! Please check your phone and enter your M-Pesa PIN.';
+                } else {
+                    this.stkStatus = 'error';
+                    this.stkMessage = result.message || 'Failed to initiate M-Pesa payment. Please check your phone number and try again.';
+                    if (result.errors) {
+                        this.stkErrors = Object.values(result.errors).flat();
+                    }
+                }
+            } catch (err) {
+                this.stkStatus = 'error';
+                this.stkMessage = 'Network error occurred while connecting to the payment server. Please try again.';
+            }
         }
      }"
-     @keydown.escape.window="lightboxOpen = false; unlockModalOpen = false"
+     @keydown.escape.window="lightboxOpen = false; closeModal()"
      @keydown.arrow-right.window="if(lightboxOpen) nextImage()"
      @keydown.arrow-left.window="if(lightboxOpen) prevImage()">
 
@@ -254,7 +305,7 @@
                             </div>
                         </div>
 
-                        <!-- Gallery Grid (Interactive Lightbox Trigger) -->
+                        <!-- Gallery Grid -->
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                             @if(!empty($unit['images']))
                                 @php
@@ -451,23 +502,19 @@
                         @endif
                     </div>
 
-                    <!-- WhatsApp & Viewing CTA Card -->
+                    <!-- WhatsApp CTA Card -->
                     <div class="bg-amber-500/5 p-6 sm:p-8 rounded-3xl border border-amber-500/20 relative overflow-hidden">
                         <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-amber-500/10 rounded-full"></div>
-                        
                         <h4 class="text-dark font-black text-lg mb-2">Schedule a Viewing</h4>
                         <p class="text-slate-600 text-xs mb-6 leading-relaxed">
                             Interested in this property? Contact our verified agent directly via WhatsApp for a faster response.
                         </p>
-                        
-                        <div class="space-y-3">
-                            <a href="https://wa.me/{{ $house->contact_number }}?text=Hi,%20I%20am%20interested%20in%20{{ urlencode($house->name) }}" 
-                               target="_blank"
-                               class="w-full inline-flex justify-center items-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:shadow-lg transition">
-                                <svg class="w-4 h-4 mr-2 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.319 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.735-.981z"/></svg>
-                                WhatsApp Agent
-                            </a>
-                        </div>
+                        <a href="https://wa.me/{{ $house->contact_number }}?text=Hi,%20I%20am%20interested%20in%20{{ urlencode($house->name) }}" 
+                           target="_blank"
+                           class="w-full inline-flex justify-center items-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:shadow-lg transition">
+                            <svg class="w-4 h-4 mr-2 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.319 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.735-.981z"/></svg>
+                            WhatsApp Agent
+                        </a>
                     </div>
 
                 </div>
@@ -483,7 +530,6 @@
          role="dialog" 
          aria-modal="true">
         
-        <!-- Backdrop -->
         <div x-show="lightboxOpen"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0"
@@ -494,7 +540,6 @@
              @click="lightboxOpen = false"
              class="fixed inset-0 bg-dark/90 backdrop-blur-md"></div>
 
-        <!-- Content Box -->
         <div x-show="lightboxOpen"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
@@ -504,7 +549,6 @@
              x-transition:leave-end="opacity-0 scale-95"
              class="relative z-10 w-full max-w-5xl flex flex-col items-center">
 
-            <!-- Close Button -->
             <button @click="lightboxOpen = false" 
                     class="absolute -top-12 right-0 text-white/80 hover:text-white transition p-2 rounded-full hover:bg-white/10">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -512,7 +556,6 @@
                 </svg>
             </button>
 
-            <!-- Image Container -->
             <div class="relative w-full flex items-center justify-center min-h-[300px] max-h-[80vh] overflow-hidden rounded-2xl bg-black/40">
                 <template x-if="activeImages.length > 0">
                     <img :src="activeImages[currentIndex]" 
@@ -520,7 +563,6 @@
                          class="max-w-full max-h-[80vh] object-contain rounded-xl select-none shadow-2xl">
                 </template>
 
-                <!-- Previous Button -->
                 <button @click="prevImage()" 
                         x-show="activeImages.length > 1"
                         class="absolute left-3 p-3 rounded-full bg-dark/60 text-white/90 hover:text-white hover:bg-dark/90 transition border border-white/10 backdrop-blur-sm">
@@ -529,7 +571,6 @@
                     </svg>
                 </button>
 
-                <!-- Next Button -->
                 <button @click="nextImage()" 
                         x-show="activeImages.length > 1"
                         class="absolute right-3 p-3 rounded-full bg-dark/60 text-white/90 hover:text-white hover:bg-dark/90 transition border border-white/10 backdrop-blur-sm">
@@ -539,22 +580,21 @@
                 </button>
             </div>
 
-            <!-- Image Counter Footer -->
             <div x-show="activeImages.length > 1" class="mt-4 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white text-xs font-bold tracking-wider">
                 <span x-text="currentIndex + 1"></span> / <span x-text="activeImages.length"></span>
             </div>
         </div>
     </div>
 
-    <!-- STK Push Unlock Modal -->
+    <!-- STK Push / Unlock Details Modal -->
     <div 
         x-show="unlockModalOpen" 
         x-cloak
         class="fixed inset-0 z-50 overflow-y-auto"
-        aria-labelledby="modal-title" 
         role="dialog" 
         aria-modal="true">
         
+        <!-- Backdrop -->
         <div 
             x-show="unlockModalOpen"
             x-transition:enter="ease-out duration-300"
@@ -563,7 +603,7 @@
             x-transition:leave="ease-in duration-200"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            @click="unlockModalOpen = false"
+            @click="closeModal()"
             class="fixed inset-0 bg-dark/60 backdrop-blur-xs transition-opacity"></div>
 
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
@@ -577,80 +617,167 @@
                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full border border-slate-100 p-6 sm:p-8">
                 
+                <!-- Close Button -->
                 <button 
-                    @click="unlockModalOpen = false" 
-                    class="absolute top-5 right-5 text-slate-400 hover:text-dark transition p-2 rounded-full hover:bg-slate-100">
+                    @click="closeModal()" 
+                    class="absolute top-5 right-5 text-slate-400 hover:text-dark transition p-2 rounded-full hover:bg-slate-100 z-10">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
 
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black text-xl shrink-0">
-                        🔓
-                    </div>
+                <!-- 1. IDLE STATE: STK Push Form -->
+                <template x-if="stkStatus === 'idle' || stkStatus === 'loading'">
                     <div>
-                        <h3 class="text-base font-extrabold text-dark tracking-tight leading-snug">
-                            Locked information about this house will be sent to the number you specify via text message once payment is confirmed.
-                        </h3>
-                    </div>
-                </div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black text-xl shrink-0">
+                                🔓
+                            </div>
+                            <div>
+                                <h3 class="text-base font-extrabold text-dark tracking-tight leading-snug">
+                                    Unlock Property Contacts & Map
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-0.5">
+                                    Direct caretaker details and map location will be delivered to your phone.
+                                </p>
+                            </div>
+                        </div>
 
-                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 flex justify-between items-center">
-                    <div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Unlock Fee</span>
-                        <span class="text-xs font-medium text-slate-600">Full Caretaker & Exact Map Details</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-2xl font-black text-emerald-600">KES 250</span>
-                    </div>
-                </div>
+                        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 flex justify-between items-center">
+                            <div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Unlock Fee</span>
+                                <span class="text-xs font-medium text-slate-600">Lifetime Access</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-2xl font-black text-emerald-600">KES 250</span>
+                            </div>
+                        </div>
 
-                <form action="{{ route('unlock') }}" method="POST" class="space-y-4">
-                    @csrf
+                        <form @submit.prevent="submitStkPush($event)" action="{{ route('unlock') }}" method="POST" class="space-y-4">
+                            @csrf
+                            <input type="hidden" name="house_id" value="{{ $house->id }}">
+                            <input type="hidden" name="amount" value="250">
 
-                    <input type="hidden" name="house_id" value="{{ $house->id }}">
-                    <div>
-                        <label for="phone_number" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                            M-Pesa Phone Number
-                        </label>
-                        <input 
-                            type="text" 
-                            name="phone_number" 
-                            id="phone_number" 
-                            placeholder="254712345678" 
-                            required 
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-xs font-medium transition"
-                        />
+                            <div>
+                                <label for="phone_number" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                                    M-Pesa Payment Number
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    name="phone_number" 
+                                    id="phone_number" 
+                                    placeholder="e.g. 254712345678" 
+                                    required 
+                                    :disabled="stkStatus === 'loading'"
+                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-xs font-medium transition disabled:opacity-60"
+                                />
+                                <span class="text-[10px] text-slate-400 mt-1 block">An STK prompt will pop up on this phone line.</span>
+                            </div>
+
+                            <div>
+                                <label for="text_phone_number" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                                    SMS Recipient Number
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    name="text_phone_number" 
+                                    id="text_phone_number" 
+                                    placeholder="e.g. 254712345678" 
+                                    required 
+                                    :disabled="stkStatus === 'loading'"
+                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-xs font-medium transition disabled:opacity-60"
+                                />
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                :disabled="stkStatus === 'loading'"
+                                class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-75">
+                                
+                                <template x-if="stkStatus === 'loading'">
+                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </template>
+                                
+                                <span x-text="stkStatus === 'loading' ? 'Sending STK Push...' : 'Pay KES 250 via M-Pesa'"></span>
+                            </button>
+                        </form>
                     </div>
+                </template>
 
-                    <div>
-                        <label for="text_phone_number" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Phone Number To receive the caretaker & map details
-                        </label>
-                        <input 
-                            type="text" 
-                            name="text_phone_number" 
-                            id="text_phone_number" 
-                            placeholder="254712345678" 
-                            required 
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-xs font-medium transition"
-                        />
+                <!-- 2. SUCCESS POPUP STATE -->
+                <template x-if="stkStatus === 'success'">
+                    <div class="text-center py-4 space-y-4">
+                        <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full inline-flex items-center justify-center text-3xl shadow-sm animate-bounce">
+                            📱
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-black text-dark tracking-tight">STK Push Initiated!</h3>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed max-w-sm mx-auto" x-text="stkMessage"></p>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-left text-xs text-emerald-800 space-y-1.5">
+                            <p class="font-bold flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Next Steps:
+                            </p>
+                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-emerald-700">
+                                <li>Check your phone display for the M-Pesa prompt.</li>
+                                <li>Enter your M-Pesa PIN to authorize payment.</li>
+                                <li>Details will be unlocked & texted automatically.</li>
+                            </ol>
+                        </div>
+
+                        <div class="pt-2">
+                            <button 
+                                @click="closeModal()" 
+                                class="w-full py-3 bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow">
+                                Got It
+                            </button>
+                        </div>
                     </div>
+                </template>
 
-                    <div>
-                        <input 
-                            type="hidden" 
-                            name="amount" 
-                            id="amount" 
-                            value="3030"
-                        />
+                <!-- 3. ERROR POPUP STATE -->
+                <template x-if="stkStatus === 'error'">
+                    <div class="text-center py-4 space-y-4">
+                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full inline-flex items-center justify-center text-3xl shadow-sm">
+                            ⚠️
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-black text-dark tracking-tight">STK Request Failed</h3>
+                            <p class="text-xs text-rose-600 font-medium mt-2 leading-relaxed max-w-sm mx-auto" x-text="stkMessage"></p>
+                        </div>
+
+                        <template x-if="stkErrors.length > 0">
+                            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-left">
+                                <ul class="list-disc list-inside text-xs text-rose-700 space-y-1">
+                                    <template x-for="(err, idx) in stkErrors" :key="idx">
+                                        <li x-text="err"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+
+                        <div class="pt-2 flex gap-3">
+                            <button 
+                                @click="resetStkState()" 
+                                class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow">
+                                Try Again
+                            </button>
+                            <button 
+                                @click="closeModal()" 
+                                class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition">
+                                Close
+                            </button>
+                        </div>
                     </div>
+                </template>
 
-                    <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-md hover:shadow-lg">
-                        Pay KES 250 via M-Pesa
-                    </button>
-                </form>
             </div>
         </div>
     </div>
@@ -659,7 +786,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     if (typeof pannellum === 'undefined') {
-        console.error("Pannellum script library is missing from the layout.");
         return;
     }
 
