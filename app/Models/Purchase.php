@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Purchase extends Model
 {
@@ -19,6 +20,7 @@ class Purchase extends Model
     protected $fillable = [
         'user_id',
         'invoice_id',
+        'house_id',
     ];
 
     /**
@@ -87,4 +89,14 @@ class Purchase extends Model
             $q->where('status', Invoice::STATUS_CANCELLED);
         });
     }
+
+    /**
+     * Get the latest house unlock associated with this purchase.
+     */
+
+public function houseUnlock(): HasOne
+{
+    return $this->hasOne(HouseUnlock::class, 'house_id', 'house_id')
+        ->latestOfMany();
+}
 }
