@@ -493,6 +493,7 @@ class BitikaWebhookController extends Controller
         $scoutPhone = $house->contact_number;
 
         $location = "https://www.google.com/maps?q={$lat},{$long}";
+        $navigationUrl = $houseUnlock->navigation_url;
 
         /*
         * Build the SMS message.
@@ -518,12 +519,9 @@ class BitikaWebhookController extends Controller
                 ? ($caretakerPhone[0]['phone'] ?? null)
                 : $caretakerPhone;
 
-            $message =
-                "Caretaker: {$caretakerNumber}, "
-                . "Location: {$location}. "
-                . "If you want to be taken to the house, "
-                . "call scout at {$scoutPhone}.";
-        }
+            $message = "CribSearch: Your house location is ready. "
+            . "Get directions here: {$navigationUrl}";
+            }
 
         /*
         * Create the SMS only once for this purchase.
