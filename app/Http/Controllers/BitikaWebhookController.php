@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendHouseUnlockSms;
 use App\Models\BitikaPayment;
 use App\Models\BitikaPurchase;
+use App\Models\SmsMessage;
 use App\Services\UjumbeSMS;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -458,12 +460,10 @@ class BitikaWebhookController extends Controller
     }
 
     /**
-     * Send house information to the customer.
+     * Save the house information to the sms message table from where actual sending will happen.
      */
     public function sendHouseInfo(BitikaPurchase $purchase): void
     {
-        $ujumbe = new UjumbeSMS();
-
         $houseUnlock = $purchase->houseUnlock;
 
         if (!$houseUnlock) {
@@ -494,6 +494,9 @@ class BitikaWebhookController extends Controller
 
         $location = "https://www.google.com/maps?q={$lat},{$long}";
 
+        /*
+        * Build the SMS message.
+        */
         if (!$caretakerPhone || !$lat || !$long) {
 
             Log::error('Caretaker phone or location missing', [
@@ -509,39 +512,64 @@ class BitikaWebhookController extends Controller
                 . "Please contact support for assistance. "
                 . "Scout Phone: {$scoutPhone}";
 
-            // $ujumbe->send(
-            //     $houseUnlock->text_phone_number,
-            //     $message
-            // );
+        } else {
+
+            $caretakerNumber = is_array($caretakerPhone)
+                ? ($caretakerPhone[0]['phone'] ?? null)
+                : $caretakerPhone;
+
+            $message =
+                "Caretaker: {$caretakerNumber}, "
+                . "Location: {$location}. "
+                . "If you want to be taken to the house, "
+                . "call scout at {$scoutPhone}.";
+        }
+
+        /*
+        * Create the SMS only once for this purchase.
+        *
+        * This protects against duplicate Bitika webhooks.
+        */
+        $smsMessage = SmsMessage::firstOrCreate(
+            [
+                'purchase_id' => $purchase->id,
+                'type' => 'house_unlock',
+            ],
+            [
+                'user_id' => $purchase->user_id,
+                'house_id' => $house->id,
+                'phone_number' => $houseUnlock->text_phone_number,
+                'message' => $message,
+                'status' => SmsMessage::STATUS_PENDING,
+                'next_attempt_at' => now(),
+            ]
+        );
+
+        /*
+        * Only dispatch the job when the SMS record was newly created.
+        */
+        if ($smsMessage->wasRecentlyCreated) {
+
+            SendHouseUnlockSms::dispatch($smsMessage);
+
+            Log::info('House unlock SMS queued.', [
+                'sms_id' => $smsMessage->id,
+                'purchase_id' => $purchase->id,
+                'user_id' => $purchase->user_id,
+                'house_id' => $house->id,
+                'phone_number' => $houseUnlock->text_phone_number,
+            ]);
 
             return;
         }
 
         /*
-         * Preserve your existing caretaker phone structure.
-         */
-        $caretakerNumber = is_array($caretakerPhone)
-            ? ($caretakerPhone[0]['phone'] ?? null)
-            : $caretakerPhone;
-
-        $message =
-            "Caretaker: {$caretakerNumber}, "
-            . "Location: {$location}. "
-            . "If you want to be taken to the house, "
-            . "call scout at {$scoutPhone}.";
-
-        // $ujumbe->send(
-        //     $houseUnlock->text_phone_number,
-        //     $message
-        // );
-
-        Log::info('House unlock information sent', [
+        * If it already exists, don't dispatch another job.
+        */
+        Log::info('House unlock SMS already exists. Skipping duplicate dispatch.', [
+            'sms_id' => $smsMessage->id,
             'purchase_id' => $purchase->id,
-            'user_id' => $purchase->user_id,
-            'house_id' => $house->id,
-            'phone_number' => $houseUnlock->text_phone_number,
-            'caretaker_phone' => $caretakerNumber,
-            'location' => $location,
+            'status' => $smsMessage->status,
         ]);
     }
 }
