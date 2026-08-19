@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BitikaStkPushController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\StkPushController;
 use App\Models\House;
@@ -46,7 +47,7 @@ Route::view('/terms', 'terms')->name('terms');
 
 // Protected routes (Requires Sanctum Bearer Token)
 
-Route::middleware('auth')->get(
+Route::middleware('auth')->post(
     '/houses/{house}/unlock',
-    [StkPushController::class, 'initiateIntaStkPush']
+    [BitikaStkPushController::class, 'initiateStkPush']
 )->name('unlock');
