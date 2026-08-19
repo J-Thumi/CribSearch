@@ -27,6 +27,9 @@ return [
             'BITIKA_WEBHOOK_SECRET'
         ),
     ],
+    'graphhopper' => [
+        'key' => env('GRAPHHOPPER_API_KEY'),
+    ],
 
     'intasend' => [
         'secret_key' => env('INTASEND_SECRET_KEY'),
