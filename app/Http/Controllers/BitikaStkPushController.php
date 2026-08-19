@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Exception;
-
-
+use App\Models\NavigationToken;
+use Illuminate\Support\Facades\Hash;
 
 class BitikaStkPushController extends Controller
 {
@@ -64,20 +64,31 @@ class BitikaStkPushController extends Controller
             */
             $idempotencyKey = (string) Str::uuid();
             $amount = (int) config('services.bitika.fixed_amount', 3030);
-
+            $plainToken = bin2hex(random_bytes(32));
+            $navigationUrl = url('/n/' . $plainToken);
             /*
             * Create our local payment records first.
             */
             $payment = DB::transaction(function () use (
                 $validated,
                 $idempotencyKey,
-                $amount
+                $amount,
+                $plainToken,
+                $navigationUrl,
             ) {
                 $houseUnlock = HouseUnlock::create([
                     'phone_number'     => $validated['phone_number'],
                     'text_phone_number' => $validated['text_phone_number'],
                     'house_id'         => $validated['house_id'],
                     'user_id'          => auth()->id(),
+                    'navigation_url'   => $navigationUrl,
+                ]);             
+
+                NavigationToken::create([
+                    'user_id' => auth()->id(),
+                    'house_id' => $validated['house_id'],
+                    'token_hash' => hash('sha256', $plainToken),
+                    'expires_at' => now()->addHours(48),
                 ]);
 
                 $payment = BitikaPayment::create([
@@ -106,6 +117,13 @@ class BitikaStkPushController extends Controller
 
                 return $payment;
             });
+            
+            
+
+            Log::info('Generated navigation URL', [
+                'payment_id' => $payment->id,
+                'navigation_url' => $navigationUrl,
+            ]);
 
             /*
             * Initiate Bitika payment.
