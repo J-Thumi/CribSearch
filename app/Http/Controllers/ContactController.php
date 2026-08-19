@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    /**
-     * Display the contact us page.
-     */
     public function index()
     {
-        return view('contact');
+        return view('contact-us');
     }
 
-    /**
-     * Handle contact form submission.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -45,8 +40,14 @@ class ContactController extends Controller
             ],
         ]);
 
-        // TODO: Send email / save message
-        // Mail::to('support@cribsearch.co.ke')->send(...);
+        ContactMessage::create([
+            'user_id' => auth()->id(),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'subject' => $validated['subject'],
+            'message' => $validated['message'],
+            'status' => ContactMessage::STATUS_NEW,
+        ]);
 
         return redirect()
             ->route('contact')
