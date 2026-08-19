@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BitikaStkPushController;
 use App\Http\Controllers\HouseController;
+use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\StkPushController;
 use App\Models\House;
 // use App\Models\House;
@@ -11,7 +12,7 @@ Route::get('/', function () {
     // Fetch the latest featured/active houses (limit to 6 for the homepage)
     $houses = House::latest()->take(3)->get();
 
-    return view('welcome', compact('houses'));
+    return view('home', compact('houses'));
 });
 
 Route::get('/houses', [HouseController::class, 'index'])->name('houses.index');
@@ -51,3 +52,9 @@ Route::middleware('auth')->post(
     '/houses/{house}/unlock',
     [BitikaStkPushController::class, 'initiateStkPush']
 )->name('unlock');
+
+Route::middleware('auth')->get('/n/{token}', [NavigationController::class, 'show'])
+    ->name('navigation.show');
+
+Route::post('/navigation/route', [NavigationController::class, 'route'])
+    ->name('navigation.route');
