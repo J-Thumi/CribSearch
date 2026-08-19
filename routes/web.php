@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BitikaStkPushController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\StkPushController;
@@ -45,7 +46,11 @@ Route::get('/privacy', function () {
 })->name('privacy');
 
 Route::view('/terms', 'terms')->name('terms');
+Route::get('/contact', [ContactController::class, 'index'])
+    ->name('contact');
 
+Route::post('/contact-us', [ContactController::class, 'store'])
+    ->name('contact.store');
 // Protected routes (Requires Sanctum Bearer Token)
 
 Route::middleware('auth')->post(
