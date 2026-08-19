@@ -101,7 +101,49 @@
                             Verified Property
                         </span>
                         <span class="text-slate-300">•</span>
-                        <span class="font-bold text-slate-700">Scout: {{ $house->scout->name ?? 'Agent' }}</span>
+                        <span class="font-bold text-slate-700">
+                            
+                            <div class="mt-4 flex items-start gap-3 bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3.5 max-w-2xl">
+                                <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2h2"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 8V6a4 4 0 018 0v2m-4 4v4"/>
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-amber-700">
+                                        Need Help With This Property?
+                                    </p>
+
+                                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mt-1">
+                                        Speak directly with
+                                        <span class="font-bold text-dark">
+                                            {{ $house->scout->name ?? 'our property scout' }} 
+                                        </span>
+                                         on 
+                                        <span class="font-bold text-dark">
+                                            {{ $house->contact_number ?? 'our property scout' }}
+                                        </span>,
+                                        the scout who uploaded this listing.
+                                        They can help you
+                                        <span class="font-semibold text-slate-800">
+                                            book a viewing, guide you to the property, arrange a visit,
+                                            confirm availability, show you the available units,
+                                            answer questions about the house and neighbourhood,
+                                            and help you get in touch with the caretaker.
+                                        </span>
+                                    </p>
+
+                                    <p class="text-[11px] text-slate-400 mt-2">
+                                        Your scout can also assist with directions, viewing schedules,
+                                        house availability and other on-the-ground questions.
+                                    </p>
+                                </div>
+                            </div>
+
+
+                        </span>
                     </p>
                 </div>
                 
@@ -146,7 +188,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                        Call Scout
+                        Call {{ $house->scout->name ?? 'our property scout' }}
                     </a>
                 </div>
             </div>
