@@ -4,7 +4,6 @@
 
 <div class="min-h-screen bg-slate-50">
 
-```
 {{-- Hero --}}
 <section class="relative overflow-hidden bg-slate-900">
     <div class="absolute inset-0 opacity-10">
@@ -363,7 +362,6 @@
 
     </div>
 </section>
-```
 
 </div>
 

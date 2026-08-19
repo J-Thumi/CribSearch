@@ -51,6 +51,8 @@ RUN composer install --no-dev --optimize-autoloader
 # Install JavaScript dependencies
 RUN npm install && npm run build
 
+COPY docker-configs/supervisord.conf /opt/docker/etc/supervisor.d/laravel.conf
+
 # Laravel specific commands
 RUN php artisan storage:link && \
     touch storage/logs/laravel.log && \
