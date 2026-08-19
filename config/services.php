@@ -10,8 +10,22 @@ return [
     ],
 
     'bitika' => [
+        'base_url' => env(
+            'BITIKA_BASE_URL',
+            'https://bitikaserver.up.railway.app'
+        ),
+
         'api_key' => env('BITIKA_API_KEY'),
-        'base_url' => env('BITIKA_BASE_URL'),
+
+        'fixed_amount' => env('BITIKA_FIXED_AMOUNT', 500),
+
+        'lightning_address' => env(
+            'BITIKA_LIGHTNING_ADDRESS'
+        ),
+
+        'webhook_secret' => env(
+            'BITIKA_WEBHOOK_SECRET'
+        ),
     ],
 
     'intasend' => [
