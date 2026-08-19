@@ -13,6 +13,7 @@ class HouseUnlock extends Model
         'text_phone_number',
         'house_id',
         'user_id',
+        'navigation_url',
     ];
 
     public function house()
