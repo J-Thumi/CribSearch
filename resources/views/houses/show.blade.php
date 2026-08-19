@@ -664,7 +664,6 @@
                         <form @submit.prevent="submitStkPush($event)" action="{{ route('unlock', $house) }}" method="POST" class="space-y-4">
                             @csrf
                             <input type="hidden" name="house_id" value="{{ $house->id }}">
-                            <input type="hidden" name="amount" value="250">
 
                             <div>
                                 <label for="phone_number" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
