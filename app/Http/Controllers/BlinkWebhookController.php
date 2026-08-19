@@ -17,6 +17,9 @@ class BlinkWebhookController extends Controller
      */
     public function handle(Request $request)
     {
+
+        return;
+        
         // Log the raw request for debugging
         Log::info('Blink webhook received', $request->all());
 
