@@ -19,6 +19,7 @@ class BitikaWebhookController extends Controller
      */
     public function handle(Request $request)
     {
+        Log::info('Bitika request', $request->all());
         /*
          * IMPORTANT:
          *
@@ -30,17 +31,19 @@ class BitikaWebhookController extends Controller
          */
         $rawBody = $request->getContent();
 
-        $signature = $request->header('X-Bitika-Signature');
+        // To be uncommented when Bitika webhook signature verification is implemented
 
-        if (!$this->verifySignature($rawBody, $signature)) {
-            Log::warning('Invalid Bitika webhook signature', [
-                'ip' => $request->ip(),
-            ]);
+        // $signature = $request->header('X-Bitika-Signature');
 
-            return response()->json([
-                'message' => 'Invalid signature.',
-            ], 401);
-        }
+        // if (!$this->verifySignature($rawBody, $signature)) {
+        //     Log::warning('Invalid Bitika webhook signature', [
+        //         'ip' => $request->ip(),
+        //     ]);
+
+        //     return response()->json([
+        //         'message' => 'Invalid signature.',
+        //     ], 401);
+        // }
 
         $payload = json_decode($rawBody, true);
 
