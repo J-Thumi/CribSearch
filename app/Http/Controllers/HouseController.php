@@ -21,34 +21,50 @@ class HouseController extends Controller
 
 
     
-  public function index(Request $request)
+ public function index(Request $request)
 {
     $query = House::with('scout');
 
-    // Filter by Scout ID
+    // 1. Location Filter (Matches the form's "location" input)
+    if ($request->filled('location')) {
+        $location = $request->input('location');
+        $query->where(function ($q) use ($location) {
+            $q->where('approximate_area', 'like', "%{$location}%")
+              ->orWhere('nearest_gate', 'like', "%{$location}%")
+              ->orWhere('name', 'like', "%{$location}%");
+        });
+    }
+
+    // 2. Type/Size Filter (Matches the form's "type" select input)
+    if ($request->filled('type')) {
+        $type = $request->input('type');
+        // Filters JSON array where any unit object has a matching "size"
+        $query->whereJsonContains('units', [['size' => $type]]);
+    }
+
+    // 3. Max Price Filter (Matches units where at least one unit price <= max_price)
+    if ($request->filled('max_price')) {
+        $maxPrice = (float) $request->input('max_price');
+
+        // Works on MySQL 5.7+ & MariaDB 10.2+ using JSON_TABLE or JSON_UNQUOTE
+        $query->whereRaw("
+            EXISTS (
+                SELECT 1 
+                FROM JSON_TABLE(units, '$[*]' COLUMNS (price FLOAT PATH '$.price')) AS u 
+                WHERE u.price <= ?
+            )
+        ", [$maxPrice]);
+    }
+
+    // Legacy/Alternative query parameters (Retained for backwards compatibility)
     if ($request->filled('scout')) {
         $query->where('scout_id', $request->input('scout'));
     }
 
-    // Filter by Nearest Campus Gate (Exact or Partial Search)
     if ($request->filled('gate')) {
         $query->where('nearest_gate', $request->input('gate'));
     }
 
-    // Filter by Unit Size inside JSON units array
-    if ($request->filled('size')) {
-        $size = $request->input('size');
-        // Native Laravel JSON check for array of objects with key "size"
-        $query->whereJsonContains('units', [['size' => $size]]);
-    }
-
-    // Filter by Max Price inside JSON units array
-    if ($request->filled('max_price')) {
-        $maxPrice = (float) $request->input('max_price');
-        $query->whereRaw("JSON_SEARCH(JSON_EXTRACT(units, '$[*].price'), 'one', ?, NULL, '$[*]') IS NOT NULL", [$maxPrice]);
-    }
-
-    // General Search (Name, Location, Gate)
     if ($request->filled('search')) {
         $search = $request->input('search');
         $query->where(function ($q) use ($search) {
@@ -58,10 +74,9 @@ class HouseController extends Controller
         });
     }
 
-    // Get houses paginated
+    // Fetch paginated results and append search queries to pagination links
     $houses = $query->latest()->paginate(9)->withQueryString();
 
-    // Fetch distinct non-null gates for dynamic select dropdown in the blade view
     $gates = House::whereNotNull('nearest_gate')
         ->distinct()
         ->pluck('nearest_gate');

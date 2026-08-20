@@ -38,8 +38,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        <input type="text" name="location" placeholder="Kilimani, Westlands, Ruiru..." 
-                            class="w-full bg-transparent text-sm font-semibold focus:outline-none text-dark placeholder-gray-400">
+                        <!-- <input type="text" name="location" placeholder="Kilimani, Westlands, Ruiru..." 
+                            class="w-full bg-transparent text-sm font-semibold focus:outline-none text-dark placeholder-gray-400"> -->
                     </div>
                 </div>
 
@@ -47,10 +47,16 @@
                     <label class="block text-[10px] font-extrabold uppercase text-gray-400 tracking-wider mb-1">Type</label>
                     <select name="type" class="w-full bg-transparent text-sm font-semibold focus:outline-none text-dark cursor-pointer appearance-none pr-4">
                         <option value="">All Categories</option>
-                        <option value="apartment">Apartment</option>
-                        <option value="mansionette">Mansionette</option>
-                        <option value="studio">Studio / Bedsitter</option>
-                        <option value="villa">Luxury Villa</option>
+                        <option value="hostel">Hostel</option> 
+                        <option value="single_room">Single Room</option>
+                        <option value="double_room">Double Room</option>
+                        
+                        <option value="bedsitter">Studio / Bedsitter</option>
+                        <option value="one_bedroom">One Bedroom</option>
+                        <option value="two_bedroom">Two Bedroom</option>
+                       
+                        <option value="three_bedroom">Three Bedroom</option>
+                        <option value="own_compound">Own Compound</option>
                     </select>
                 </div>
 
