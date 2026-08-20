@@ -263,6 +263,6 @@ _ide_helper_models.php
 *.save
 *.cache
 *.pid
-*.lock
+# *.lock
 .Dockerfile.*
 docker-compose*.override.yml
