@@ -63,3 +63,9 @@ Route::middleware('auth')->get('/n/{token}', [NavigationController::class, 'show
 
 Route::post('/navigation/route', [NavigationController::class, 'route'])
     ->name('navigation.route');
+
+Route::get('/test-404', fn() => abort(404));
+Route::get('/test-419', fn() => abort(419));
+Route::get('/test-500', fn() => abort(500));
+Route::get('/test-503', fn() => abort(503));
+Route::get('/test-403', fn() => abort(403, 'Unauthorized access to Scout dashboard.'));
