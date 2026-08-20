@@ -444,6 +444,48 @@
                                     </div>
                                 @endif
                             </div>
+                        @else
+                            <!-- Default Virtual 360 Tour Placeholder -->
+                            <div class="mt-6 bg-slate-50 border border-slate-200/80 rounded-2xl p-4 shadow-sm">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h4 class="text-sm font-bold text-dark flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            Virtual 360° Tour
+                                        </h4>
+                                        <p class="text-[11px] text-slate-400">Sample preview mode</p>
+                                    </div>
+                                    
+                                    <span class="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200/80 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                        Coming Soon
+                                    </span>
+                                </div>
+
+                                <div class="relative overflow-hidden rounded-xl bg-slate-900 border border-slate-200">
+                                    <!-- Pannellum Viewer with Sample Image -->
+                                    <div
+                                        class="panorama-viewer w-full"
+                                        style="height: 420px;" 
+                                        data-id="tour-demo-{{ $loop->index ?? 0 }}"
+                                        data-panorama="{{ asset('storage/virtual-tours/01KWA5XK9XNEAEXAQ43CHBDSVJ.jpeg') }}">
+                                    </div>
+
+                                    <!-- "Coming Soon" Floating Overlay -->
+                                    <div class="absolute inset-x-4 top-4 pointer-events-none flex justify-center">
+                                        <div class="bg-dark/90 backdrop-blur-md text-white border border-white/10 px-4 py-2 rounded-xl text-center shadow-lg">
+                                            <p class="text-xs font-bold text-amber-400 uppercase tracking-wide">
+                                                Feature Coming Soon
+                                            </p>
+                                            <p class="text-[11px] text-slate-300 mt-0.5">
+                                                This house virtual tour is not available right now. Here is a preview of how it will look!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </section>
                 @endforeach
