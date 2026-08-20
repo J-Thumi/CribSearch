@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BitikaStkPushController;
 use App\Http\Controllers\ContactController;
@@ -69,3 +71,11 @@ Route::get('/test-419', fn() => abort(419));
 Route::get('/test-500', fn() => abort(500));
 Route::get('/test-503', fn() => abort(503));
 Route::get('/test-403', fn() => abort(403, 'Unauthorized access to Scout dashboard.'));
+
+// Request Password Reset Link (Email Form)
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Perform Password Reset Form
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
