@@ -1,0 +1,268 @@
+# ============================================================
+# Git
+# ============================================================
+.git
+.git/*
+.gitignore
+.gitattributes
+.github
+.gitlab
+.bitbucket
+
+
+# ============================================================
+# Environment / Secrets
+# ============================================================
+.env
+.env.*
+!.env.example
+!.env.docker
+!.env.production.example
+!.env.testing.example
+
+# Local secrets / certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.cer
+secrets/
+credentials/
+
+
+# ============================================================
+# Laravel generated/runtime files
+# ============================================================
+/storage/app/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+
+# Keep Laravel storage directories themselves
+!/storage/app/
+!/storage/framework/
+!/storage/framework/cache/
+!/storage/framework/sessions/
+!/storage/framework/testing/
+!/storage/framework/views/
+!/storage/logs/
+
+# Laravel bootstrap cache
+/bootstrap/cache/*.php
+
+
+# ============================================================
+# Composer
+# ============================================================
+/vendor/
+
+# Composer cache
+composer-cache/
+.phpunit.result.cache
+
+
+# ============================================================
+# Node / NPM / Vite
+# ============================================================
+/node_modules/
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/pnpm-debug.log*
+
+# NPM cache
+.npm/
+.yarn/
+.pnpm-store/
+
+# Build output
+/public/build/
+/public/hot
+
+# Vite cache
+.vite/
+
+
+# ============================================================
+# Testing / Coverage
+# ============================================================
+/.phpunit.cache/
+/coverage/
+/clover.xml
+/coverage.xml
+/phpunit.xml.bak
+
+# Pest
+/.pest/
+
+
+# ============================================================
+# IDEs / Editors
+# ============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.iml
+
+# VS Code local files
+.history/
+
+# Vim / Nano / Emacs
+*~
+.#*
+\#*#
+
+
+# ============================================================
+# OS generated files
+# ============================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# ============================================================
+# Docker
+# ============================================================
+docker-compose.override.yml
+docker-compose.override.yaml
+docker-compose.dev.yml
+docker-compose.local.yml
+
+# Docker local data
+.docker/
+docker-data/
+docker-volumes/
+
+# Local Docker environment files
+.env.docker.local
+
+
+# ============================================================
+# Logs
+# ============================================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+
+# ============================================================
+# Temporary files
+# ============================================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+tmp/
+temp/
+
+
+# ============================================================
+# Database files
+# ============================================================
+*.sqlite
+*.sqlite3
+*.db
+
+# Local database dumps
+*.sql
+*.dump
+*.bak.sql
+database/backups/
+
+
+# ============================================================
+# Laravel Pint / PHP tooling
+# ============================================================
+.php-cs-fixer.cache
+.phpstan.neon.bak
+.phpstan.cache
+
+
+# ============================================================
+# Laravel Telescope / Debugbar generated data
+# ============================================================
+/storage/telescope/*
+/storage/debugbar/*
+
+
+# ============================================================
+# Frontend build artifacts
+# ============================================================
+dist/
+build/
+.next/
+.nuxt/
+.cache/
+
+
+# ============================================================
+# Documentation / project files not needed in production image
+# ============================================================
+README.md
+README.*
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+docs/
+documentation/
+
+
+# ============================================================
+# Development scripts/configs
+# ============================================================
+.env.testing
+.env.local
+
+# Local development configuration
+phpstan.neon
+phpstan.neon.dist
+phpunit.xml
+pint.json
+
+
+# ============================================================
+# Backup / archive files
+# ============================================================
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+
+# ============================================================
+# Laravel IDE/helper generated files
+# ============================================================
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
+
+# ============================================================
+# Miscellaneous
+# ============================================================
+*.orig
+*.rej
+*.old
+*.save
+*.cache
+*.pid
+*.lock
+.Dockerfile.*
+docker-compose*.override.yml
