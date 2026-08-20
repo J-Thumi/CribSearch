@@ -17,21 +17,20 @@ class AuthController extends Controller
      */
     public function register(Request $request): JsonResponse
     {
-        Log::info('Registering new user', [
-            'email' => $request->input('email'),
-        ]);
-
         $fields = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'terms'    => ['accepted'],
+            'redirect' => ['nullable', 'string'],
         ]);
 
         $user = User::create([
-            'name'     => $fields['name'],
-            'email'    => $fields['email'],
-            'password' => Hash::make($fields['password']),
-            'is_admin' => false,
+            'name'              => $fields['name'],
+            'email'             => $fields['email'],
+            'password'          => Hash::make($fields['password']),
+            'is_admin'          => false,
+            'terms_accepted_at' => now(),
         ]);
 
         Auth::login($user);
@@ -40,7 +39,10 @@ class AuthController extends Controller
 
         $redirect = $request->input('redirect');
 
-        if (!$redirect || !str_starts_with($redirect, '/')) {
+        if (
+            !$redirect ||
+            !str_starts_with($redirect, '/')
+        ) {
             $redirect = route('houses.index');
         }
 
@@ -59,29 +61,54 @@ class AuthController extends Controller
         $fields = $request->validate([
             'email'    => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'terms'    => ['accepted'],
             'redirect' => ['nullable', 'string'],
+            'remember' => ['nullable', 'boolean'],
         ]);
 
         if (!Auth::attempt([
             'email'    => $fields['email'],
             'password' => $fields['password'],
-        ])) {
+        ], $request->boolean('remember'))) {
+
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials do not match our records.'],
+                'email' => [
+                    'The provided credentials do not match our records.'
+                ],
             ]);
         }
 
-        // Prevent session fixation
         $request->session()->regenerate();
 
-        // Prioritize the explicitly passed redirect URL, then session intended, then fallback
-        $redirectTarget = $request->input('redirect') 
-            ?? session()->pull('url.intended') 
-            ?? route('houses.index');
+        $user = Auth::user();
+
+        /*
+        * Record the date/time the user accepted
+        * the current Terms & Conditions.
+        */
+        if ($request->boolean('terms') && !$user->terms_accepted_at) {
+            $user->update([
+                'terms_accepted_at' => now(),
+            ]);
+        }
+
+        /*
+        * Only allow local redirects.
+        */
+        $redirectTarget = $request->input('redirect');
+
+        if (
+            !$redirectTarget ||
+            !str_starts_with($redirectTarget, '/')
+        ) {
+            $redirectTarget =
+                session()->pull('url.intended')
+                ?? route('houses.index');
+        }
 
         return response()->json([
             'message'  => 'Logged in successfully',
-            'user'     => Auth::user(),
+            'user'     => $user,
             'redirect' => $redirectTarget,
         ]);
     }
