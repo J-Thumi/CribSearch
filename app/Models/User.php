@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmailNotification;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,10 +10,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles; 
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
@@ -29,6 +31,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'is_admin',
         'terms_accepted_at',
+        'email_verified_at'
     ];
 
     /**
@@ -82,5 +85,11 @@ class User extends Authenticatable implements FilamentUser
 
         // Call the scope as ->paid() instead of ->scopePaid()
         return $this->purchases()->paid()->exists();
+    }
+
+    
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailNotification);
     }
 }

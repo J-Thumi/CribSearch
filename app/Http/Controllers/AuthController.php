@@ -35,21 +35,16 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        $request->session()->regenerate();
+        // Send verification email.
+        $user->sendEmailVerificationNotification();
 
-        $redirect = $request->input('redirect');
-
-        if (
-            !$redirect ||
-            !str_starts_with($redirect, '/')
-        ) {
-            $redirect = route('houses.index');
-        }
+        $request->session()->flash('verification_email', $user->email);
 
         return response()->json([
-            'message'  => 'User registered successfully',
-            'user'     => $user,
-            'redirect' => $redirect,
+            'message'             => 'Account created successfully.',
+            'verification_required' => true,
+            'verification_message' => 'Please verify your email address to continue. We have sent a verification link to your email.',
+            'email'               => $user->email,
         ], 201);
     }
 

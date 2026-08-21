@@ -2,6 +2,51 @@
 
 @section('content')
 <div class="bg-slate-50 min-h-screen py-10">
+    @if (auth()->check() && !auth()->user()->hasVerifiedEmail())
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 mt-0.5">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h2 class="font-bold text-amber-900">
+                        Please verify your email address
+                    </h2>
+
+                    <p class="text-sm text-amber-800 mt-1">
+                        @if (session('verification_email'))
+                            If you have just registered, we sent a verification link to <strong>{{ session('verification_email') }}</strong>. Please check your inbox and spam folder to activate your account.
+                        @else
+                            Please verify your email address (<strong>{{ auth()->user()->email }}</strong>) to access all features.
+                        @endif
+                    </p>
+
+                    @if (session('status') == 'verification-link-sent')
+                        <p class="text-xs font-semibold text-emerald-700 mt-2">
+                            A fresh verification link has been sent to your email address! Please check your spam folder if you don't see it.
+                        </p>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex-shrink-0 sm:self-center">
+                <form method="POST" action="{{ route('verification.send') }}">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center text-xs font-semibold uppercase tracking-wider bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl transition duration-150 ease-in-out">
+                        Resend Verification Email
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+@endif
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
         <!-- Page Title & Header Banner -->
