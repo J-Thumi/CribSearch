@@ -45,7 +45,7 @@
                     <td
                         align="center"
                         style="
-                            background-color: #2563eb;
+                            background-color: #d97706;
                             padding: 30px 20px;
                         "
                     >
@@ -125,7 +125,7 @@
                                         href="{{ $verificationUrl }}"
                                         style="
                                             display: inline-block;
-                                            background-color: #2563eb;
+                                            background-color: #d97706;
                                             color: #ffffff;
                                             text-decoration: none;
                                             font-size: 16px;
@@ -181,7 +181,7 @@
                                 style="
                                     font-size: 12px;
                                     line-height: 1.6;
-                                    color: #2563eb;
+                                    color: #d97706;
                                     word-break: break-all;
                                     text-decoration: none;
                                 "
@@ -240,7 +240,7 @@
                             style="
                                 margin-top: 12px;
                                 font-size: 11px;
-                                color: #94a3b8;
+                                color: #d97706;
                             "
                         >
                             © {{ date('Y') }} CribSearch. All rights reserved.
