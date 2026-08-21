@@ -106,8 +106,10 @@
                             <div class="mt-4 flex items-start gap-3 bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3.5 max-w-2xl">
                                 <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2h2"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 8V6a4 4 0 018 0v2m-4 4v4"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2h2"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 8V6a4 4 0 018 0v2m-4 4v4"/>
                                     </svg>
                                 </div>
 
@@ -119,9 +121,9 @@
                                     <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mt-1">
                                         Speak directly with
                                         <span class="font-bold text-dark">
-                                            {{ $house->scout->name ?? 'our property scout' }} 
+                                            {{ $house->scout->name ?? 'our property scout' }}
                                         </span>
-                                         on 
+                                        on
                                         <span class="font-bold text-dark">
                                             {{ $house->contact_number ?? 'our property scout' }}
                                         </span>,
@@ -139,6 +141,22 @@
                                         Your scout can also assist with directions, viewing schedules,
                                         house availability and other on-the-ground questions.
                                     </p>
+
+                                    {{-- Additional Services Disclaimer --}}
+                                    <div class="mt-3 pt-3 border-t border-amber-200/70">
+                                        <p class="text-[11px] sm:text-xs text-amber-800 leading-relaxed">
+                                            <span class="font-bold">Please note:</span>
+                                            Any additional service requested from the scout, including but
+                                            not limited to
+                                            <span class="font-semibold">
+                                                site visits, transport, guided property tours, or other
+                                                services beyond the standard listing assistance,
+                                            </span>
+                                            may attract additional fees. Please confirm any applicable
+                                            charges with the scout before requesting or agreeing to such
+                                            services.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
