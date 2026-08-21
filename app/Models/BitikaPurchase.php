@@ -17,6 +17,7 @@ class BitikaPurchase extends Model
         'house_id',
         'house_unlock_id',
         'bitika_payment_id',
+        'house_info_email_sent_at',
     ];
 
     /*

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendHouseUnlockSms;
+use App\Mail\HouseUnlockMail;
 use App\Models\BitikaPayment;
 use App\Models\BitikaPurchase;
 use App\Models\SmsMessage;
@@ -10,6 +11,7 @@ use App\Services\UjumbeSMS;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 
 class BitikaWebhookController extends Controller
@@ -460,7 +462,7 @@ class BitikaWebhookController extends Controller
     }
 
     /**
-     * Save the house information to the sms message table from where actual sending will happen.
+     * Send the unlocked house information to the user's email.
      */
     public function sendHouseInfo(BitikaPurchase $purchase): void
     {
@@ -487,87 +489,67 @@ class BitikaWebhookController extends Controller
             return;
         }
 
-        $caretakerPhone = $house->caretaker_phone;
-        $lat = $house->lat;
-        $long = $house->long;
-        $scoutPhone = $house->contact_number;
+        $user = $purchase->user;
 
-        $location = "https://www.google.com/maps?q={$lat},{$long}";
-        $navigationUrl = $houseUnlock->navigation_url;
-
-        /*
-        * Build the SMS message.
-        */
-        if (!$caretakerPhone || !$lat || !$long) {
-
-            Log::error('Caretaker phone or location missing', [
-                'house_id' => $house->id,
-                'caretaker_phone' => $caretakerPhone,
-                'lat' => $lat,
-                'long' => $long,
-            ]);
-
-            $message =
-                "Your house is now unlocked. However, "
-                . "caretaker phone number or location is missing. "
-                . "Please contact support for assistance. "
-                . "Scout Phone: {$scoutPhone}";
-
-        } else {
-
-            $caretakerNumber = is_array($caretakerPhone)
-                ? ($caretakerPhone[0]['phone'] ?? null)
-                : $caretakerPhone;
-
-            $message = "CribSearch: Your house location is ready. "
-            . "Get directions here: {$navigationUrl}";
-            }
-
-        /*
-        * Create the SMS only once for this purchase.
-        *
-        * This protects against duplicate Bitika webhooks.
-        */
-        $smsMessage = SmsMessage::firstOrCreate(
-            [
-                'purchase_id' => $purchase->id,
-                'type' => 'house_unlock',
-            ],
-            [
-                'user_id' => $purchase->user_id,
-                'house_id' => $house->id,
-                'phone_number' => $houseUnlock->text_phone_number,
-                'message' => $message,
-                'status' => SmsMessage::STATUS_PENDING,
-                'next_attempt_at' => now(),
-            ]
-        );
-
-        /*
-        * Only dispatch the job when the SMS record was newly created.
-        */
-        if ($smsMessage->wasRecentlyCreated) {
-
-            SendHouseUnlockSms::dispatch($smsMessage);
-
-            Log::info('House unlock SMS queued.', [
-                'sms_id' => $smsMessage->id,
+        if (!$user || !$user->email) {
+            Log::error('User email missing for house unlock email', [
                 'purchase_id' => $purchase->id,
                 'user_id' => $purchase->user_id,
-                'house_id' => $house->id,
-                'phone_number' => $houseUnlock->text_phone_number,
             ]);
 
             return;
         }
 
         /*
-        * If it already exists, don't dispatch another job.
+        * Get caretaker phone number.
+        *
+        * caretaker_phone may be stored as either:
+        * - a normal string
+        * - an array containing phone details
         */
-        Log::info('House unlock SMS already exists. Skipping duplicate dispatch.', [
-            'sms_id' => $smsMessage->id,
+        $caretakerPhone = $house->caretaker_phone;
+
+        if (is_array($caretakerPhone)) {
+            $caretakerPhone = $caretakerPhone[0]['phone'] ?? null;
+        }
+
+        /*
+        * Prevent duplicate emails.
+        */
+        if ($purchase->house_info_email_sent_at) {
+            Log::info('House unlock email already sent. Skipping.', [
+                'purchase_id' => $purchase->id,
+                'user_id' => $purchase->user_id,
+                'house_id' => $house->id,
+            ]);
+
+            return;
+        }
+
+        /*
+        * Send the email.
+        */
+        Mail::to($user->email)->queue(
+            new HouseUnlockMail(
+                house: $house,
+                navigationUrl: $houseUnlock->navigation_url,
+                caretakerPhone: $caretakerPhone,
+            )
+        );
+
+        /*
+        * Mark the email as queued/sent.
+        */
+        $purchase->update([
+            'house_info_email_sent_at' => now(),
+        ]);
+
+        Log::info('House unlock email queued.', [
             'purchase_id' => $purchase->id,
-            'status' => $smsMessage->status,
+            'user_id' => $purchase->user_id,
+            'house_id' => $house->id,
+            'email' => $user->email,
+            'caretaker_phone' => $caretakerPhone,
         ]);
     }
 }
