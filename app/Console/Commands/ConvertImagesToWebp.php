@@ -6,7 +6,7 @@ use App\Models\House;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Drivers\Imagick\Driver; // Updated to Imagick Driver
 use Intervention\Image\Format;
 
 class ConvertImagesToWebp extends Command
@@ -26,6 +26,7 @@ class ConvertImagesToWebp extends Command
         $keepOriginal = $this->option('keep-original');
         $dryRun = $this->option('dry-run');
 
+        // Switch to Imagick driver
         $this->manager = ImageManager::usingDriver(Driver::class);
 
         $houses = House::all();

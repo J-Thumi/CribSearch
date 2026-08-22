@@ -188,85 +188,79 @@
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
                     
                     <!-- Cover Image & Price Badge Container -->
-                   <div class="relative h-60 overflow-hidden bg-slate-100"
-     x-data="{
-        images: {{ json_encode(collect($house->units)->flatMap(fn($u) => $u['images'] ?? [])->map(fn($img) => asset('storage/'.$img))->values()) }},
-        current: 0,
-        next() { this.current = (this.current + 1) % this.images.length },
-        prev() { this.current = (this.current - 1 + this.images.length) % this.images.length }
-     }">
-    @php
-        $firstUnit = $house->units[0] ?? null;
-        $minPrice = collect($house->units)->min('price') ?? 0;
-    @endphp
+                  <div class="relative h-72 overflow-hidden bg-gray-100"
+                        x-data="{
+                            images: {{ json_encode(collect($house->units)->flatMap(fn($u) => $u['images'] ?? [])->map(fn($img) => asset('storage/'.$img))->values()) }},
+                            currentIndex: 0,
+                            timer: null,
+                            startAutoplay() {
+                                if (this.images.length > 1) {
+                                    this.timer = setInterval(() => {
+                                        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+                                    }, 3000); // Change image every 3 seconds
+                                }
+                            },
+                            stopAutoplay() {
+                                if (this.timer) clearInterval(this.timer);
+                            }
+                        }"
+                        x-init="startAutoplay()"
+                        @mouseenter="stopAutoplay()"
+                        @mouseleave="startAutoplay()">
 
-    <template x-if="images.length > 0">
-        <img :src="images[current]"
-             :alt="'{{ $house->name }}'"
-             loading="lazy"
-             decoding="async"
-             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-    </template>
+                        @php
+                            $firstUnit = $house->units[0] ?? null;
+                            $minPrice = collect($house->units)->min('price') ?? 0;
+                        @endphp
 
-    <template x-if="images.length === 0">
-        <img src="https://placehold.co/600x400?text=No+Image"
-             alt="{{ $house->name }}"
-             loading="lazy"
-             decoding="async"
-             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-    </template>
+                        <template x-if="images.length > 0">
+                            <div class="relative w-full h-full">
+                                <template x-for="(image, index) in images" :key="index">
+                                    <img 
+                                        :src="image" 
+                                        alt="{{ $house->name }}" 
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out"
+                                        :class="currentIndex === index ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+                                    />
+                                </template>
+                            </div>
+                        </template>
 
-    <!-- Prev/Next arrows — only show when there's more than one image -->
-    <template x-if="images.length > 1">
-        <div>
-            <button
-                @click.stop.prevent="prev()"
-                type="button"
-                aria-label="Previous image"
-                class="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
+                        <template x-if="images.length === 0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                <span>No Image Available</span>
+                            </div>
+                        </template>
 
-            <button
-                @click.stop.prevent="next()"
-                type="button"
-                aria-label="Next image"
-                class="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
+                        <!-- Optional slide indicators (dots) -->
+                        <template x-if="images.length > 1">
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+                                <template x-for="(img, i) in images" :key="i">
+                                    <button
+                                        @click="currentIndex = i"
+                                        type="button"
+                                        :aria-label="'Go to image ' + (i + 1)"
+                                        class="h-1.5 rounded-full transition-all duration-300"
+                                        :class="currentIndex === i ? 'bg-white w-4' : 'bg-white/50 w-1.5'">
+                                    </button>
+                                </template>
+                            </div>
+                        </template>
+                        <!-- Price Tag Overlay -->
+                        <div class="absolute bottom-3 left-3 bg-dark/90 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl font-black text-xs border border-white/10 shadow-lg">
+                            <span class="text-primary">KES {{ number_format($minPrice) }}</span><span class="text-[10px] font-medium text-slate-300"> / mo</span>
+                        </div>
 
-            <!-- Dots indicator -->
-            <div class="absolute bottom-14 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
-                <template x-for="(img, i) in images" :key="i">
-                    <button
-                        @click.stop.prevent="current = i"
-                        type="button"
-                        :aria-label="'Go to image ' + (i + 1)"
-                        class="w-1.5 h-1.5 rounded-full transition"
-                        :class="current === i ? 'bg-white w-4' : 'bg-white/50'">
-                    </button>
-                </template>
-            </div>
-        </div>
-    </template>
-
-    <!-- Price Tag Overlay -->
-    <div class="absolute bottom-3 left-3 bg-dark/90 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl font-black text-xs border border-white/10 shadow-lg">
-        <span class="text-primary">KES {{ number_format($minPrice) }}</span><span class="text-[10px] font-medium text-slate-300"> / mo</span>
-    </div>
-
-    @if($minPrice > 50000)
-        <div class="absolute top-3 right-3">
-            <span class="bg-premium text-white text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">
-                Premium
-            </span>
-        </div>
-    @endif
-</div>
+                        @if($minPrice > 50000)
+                            <div class="absolute top-3 right-3">
+                                <span class="bg-premium text-white text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">
+                                    Premium
+                                </span>
+                            </div>
+                        @endif
+                    </div>
 
                     <!-- Details Card Body -->
                     <div class="p-5 flex-grow flex flex-col justify-between">
