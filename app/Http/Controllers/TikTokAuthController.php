@@ -32,37 +32,39 @@ class TikTokAuthController extends Controller
      * THIS IS WHERE exchangeCodeForToken IS USED.
      */
     public function callback(Request $request, TikTokPostService $tikTokService)
-    {
-        // 1. Verify CSRF State
-        $savedState = session()->pull('tiktok_oauth_state');
-        if (empty($savedState) || $savedState !== $request->query('state')) {
-            return redirect()->route('dashboard')->with('error', 'Invalid OAuth state token.');
-        }
-
-        // 2. Check for Authorization Code
-        $code = $request->query('code');
-        if (blank($code)) {
-            $error = $request->query('error_description', 'Authorization failed or was denied.');
-            return redirect()->route('dashboard')->with('error', $error);
-        }
-
-        try {
-            // 3. CALL exchangeCodeForToken HERE
-            $tokenData = $tikTokService->exchangeCodeForToken($code);
-
-            // 4. Save credentials to the logged-in user record
-            $user = auth()->user();
-            $user->update([
-                'tiktok_open_id'          => $tokenData['open_id'],
-                'tiktok_access_token'     => $tokenData['access_token'],
-                'tiktok_refresh_token'    => $tokenData['refresh_token'],
-                'tiktok_token_expires_at' => now()->addSeconds($tokenData['expires_in']),
-            ]);
-
-            return redirect()->route('dashboard')->with('success', 'TikTok account connected successfully!');
-
-        } catch (Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
-        }
+{
+    // 1. Verify CSRF State
+    $savedState = session()->pull('tiktok_oauth_state');
+    
+    // Fallback: If running locally or state mismatch, log error cleanly
+    if (empty($savedState) || $savedState !== $request->query('state')) {
+        return redirect('/admin')->with('error', 'OAuth state verification failed. Please try connecting again.');
     }
+
+    // 2. Check for Authorization Code
+    $code = $request->query('code');
+    if (blank($code)) {
+        $error = $request->query('error_description', 'Authorization failed or was denied.');
+        return redirect('/admin')->with('error', $error);
+    }
+
+    try {
+        // 3. Exchange code for access token
+        $tokenData = $tikTokService->exchangeCodeForToken($code);
+
+        // 4. Save credentials to logged-in user
+        $user = auth()->user();
+        $user->update([
+            'tiktok_open_id'          => $tokenData['open_id'],
+            'tiktok_access_token'     => $tokenData['access_token'],
+            'tiktok_refresh_token'    => $tokenData['refresh_token'],
+            'tiktok_token_expires_at' => now()->addSeconds($tokenData['expires_in']),
+        ]);
+
+        return redirect('/admin')->with('success', 'TikTok account connected successfully!');
+
+    } catch (\Exception $e) {
+        return redirect('/admin')->with('error', 'TikTok Error: ' . $e->getMessage());
+    }
+}
 }

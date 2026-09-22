@@ -15,6 +15,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class HousesTable
@@ -103,14 +104,37 @@ class HousesTable
                             $accessToken = $tikTokService->getValidUserToken(auth()->user());
 
                             // Extract unit photos
-                            $imageUrls = collect($record->units ?? [])
-                                ->flatMap(fn ($unit) => array_merge($unit['images'] ?? [], $unit['virtual_tour_images'] ?? []))
-                                ->filter()
-                                ->map(fn ($path) => url(Storage::url($path)))
-                                ->unique()
-                                ->take(35)
-                                ->values()
-                                ->toArray();
+                           $imageUrls = collect($record->units ?? [])
+                            ->flatMap(function ($unit) {
+                                // 1. Prefer explicitly generated tiktok_images if available
+                                if (!empty($unit['tiktok_images'])) {
+                                    return $unit['tiktok_images'];
+                                }
+
+                                // 2. Fallback: derive tiktok/ directory path from images or virtual tour images
+                                $originalPaths = array_merge($unit['images'] ?? [], $unit['virtual_tour_images'] ?? []);
+                                
+                                return array_map(function ($path) {
+                                    // Converts 'house-units/abc/01.webp' -> 'tiktok/house-units/abc/01.jpg'
+                                    $jpgPath = preg_replace('/\.webp$/i', '.jpg', $path);
+                                    return str_starts_with($jpgPath, 'tiktok/') ? $jpgPath : 'tiktok/' . $jpgPath;
+                                }, $originalPaths);
+                            })
+                            ->filter()
+                            ->map(fn ($path) => url(Storage::url($path)))
+                            ->unique()
+                            ->take(35)
+                            ->values()
+                            ->toArray();
+
+                        Log::info('Posting to TikTok', [
+                            'house_id' => $record->id,
+                            'image_count' => count($imageUrls),
+                            'title' => $data['title'],
+                            'description' => $data['description'],
+                            'privacy_level' => $data['privacy_level'],
+                            'image_urls' => $imageUrls,
+                        ]);
 
                             if (empty($imageUrls)) {
                                 Notification::make()->title('No images found')->warning()->send();
@@ -124,6 +148,7 @@ class HousesTable
                                 description: $data['description'],
                                 privacyLevel: $data['privacy_level']
                             );
+                            Log::info("Successfully posted to TikTok. Publish ID: {$publishId}");
 
                             Notification::make()
                                 ->title('Posted to TikTok!')

@@ -24,43 +24,125 @@ class TikTokPostService
 
         return $response->json('data');
     }
-
-    /**
-     * Direct Post Photo Slideshow (Houses)
-     * https://developers.tiktok.com/docs/en/content-posting-api-reference-photo-post
-     */
     public function postPhotoSlideshow(
-        string $accessToken,
-        array $imageUrls,
-        string $title,
-        string $description,
-        string $privacyLevel = 'PUBLIC_TO_EVERYONE'
-    ): string {
-        $payload = [
-            'post_mode' => 'DIRECT_POST',
-            'media_type' => 'PHOTO',
-            'post_info' => [
-                'title' => $title,
-                'description' => $description,
-                'privacy_level' => $privacyLevel,
-                'disable_comment' => false,
-            ],
-            'source_info' => [
-                'source' => 'PULL_FROM_URL',
-                'photo_images' => $imageUrls, // Max 35 image URLs from publicly accessible domain
-                'photo_cover_index' => 0,
-            ],
-        ];
+    string $accessToken, 
+    array $imageUrls, // Full HTTPS URLs: ['https://cribsearch.jostech.co.ke/storage/.../01.jpg']
+    string $title, 
+    string $description, 
+    string $privacyLevel = 'SELF_ONLY'
+): string {
+    // 1. Sanitize string inputs
+    $cleanTitle = \Illuminate\Support\Str::limit(trim($title), 80, '');
+    
+    $cleanDescription = str_replace('()', '', $description);
+    $cleanDescription = \Illuminate\Support\Str::limit(trim($cleanDescription), 2000);
 
-        $response = Http::withToken($accessToken)
-            ->post($this->baseUrl . 'post/publish/content/init/', $payload);
+    // 2. Ensure clean indexed array of string URLs
+    $formattedImages = array_values($imageUrls);
 
-        if ($response->failed() || $response->json('error.code') !== 'ok') {
-            throw new Exception('TikTok Photo Post Failed: ' . $response->json('error.message'));
-        }
+    // 3. TikTok Content Posting API v2 Payload for PHOTO
+    $payload = [
+        'post_info' => [
+            'title'           => $cleanTitle,
+            'description'     => $cleanDescription,
+            'privacy_level'   => $privacyLevel,
+            'disable_comment' => false,
+            'auto_add_music'  => false,
+        ],
+        'source_info' => [
+            'source'            => 'PULL_FROM_URL',
+            'photo_cover_index' => 1,
+            'photo_images'      => $formattedImages, // Array of strings (URLs)
+        ],
+        'post_mode'  => 'DIRECT_POST',
+        'media_type' => 'PHOTO',
+    ];
 
-        return $response->json('data.publish_id');
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $accessToken,
+        'Content-Type'  => 'application/json; charset=UTF-8',
+    ])->post($this->baseUrl . 'post/publish/content/init/', $payload);
+
+    $responseData = $response->json();
+
+    if ($response->failed() || (isset($responseData['error']['code']) && $responseData['error']['code'] !== 'ok')) {
+        Log::error('TikTok Photo Post Failed', [
+            'payload'  => $payload,
+            'response' => $responseData,
+        ]);
+
+        throw new \Exception('TikTok Photo Post Failed: ' . json_encode($responseData['error'] ?? $response->body()));
     }
+
+    return $responseData['data']['publish_id'];
+}
+
+    public function postPhotoSlideshowDirectUpload(
+    string $accessToken, 
+    array $localPaths, 
+    string $title, 
+    string $description
+): string {
+    $validFiles = [];
+
+    foreach (array_values($localPaths) as $path) {
+        $fullPath = str_starts_with($path, '/') ? $path : storage_path('app/public/' . $path);
+        if (file_exists($fullPath)) {
+            $validFiles[] = $fullPath;
+        }
+    }
+
+    if (empty($validFiles)) {
+        throw new \Exception('No valid local image files found for TikTok upload.');
+    }
+
+    // Correct payload for FILE_UPLOAD media_type PHOTO
+    $payload = [
+        'post_info' => [
+            'title'           => \Illuminate\Support\Str::limit(trim($title), 80, ''),
+            'description'     => str_replace('()', '', \Illuminate\Support\Str::limit(trim($description), 2000)),
+            'privacy_level'   => 'SELF_ONLY',
+            'disable_comment' => false,
+            'auto_add_music'  => false,
+        ],
+        'source_info' => [
+            'source'            => 'FILE_UPLOAD',
+            'photo_cover_index' => 1,
+            'total_count'       => count($validFiles),
+        ],
+        'post_mode'  => 'DIRECT_POST',
+        'media_type' => 'PHOTO',
+    ];
+
+    $initResponse = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $accessToken,
+        'Content-Type'  => 'application/json; charset=UTF-8',
+    ])->post($this->baseUrl . 'post/publish/content/init/', $payload);
+
+    $initData = $initResponse->json();
+
+    if ($initResponse->failed() || (isset($initData['error']['code']) && $initData['error']['code'] !== 'ok')) {
+        Log::error('TikTok Direct Upload Init Failed', [
+            'payload'  => $payload,
+            'response' => $initData,
+        ]);
+        throw new \Exception('TikTok Direct Upload Init Failed: ' . json_encode($initData['error'] ?? $initResponse->body()));
+    }
+
+    $publishId = $initData['data']['publish_id'];
+    $uploadUrl = $initData['data']['upload_url'] ?? null;
+
+    if ($uploadUrl) {
+        foreach ($validFiles as $fullPath) {
+            Http::withHeaders([
+                'Content-Type' => 'image/jpeg',
+            ])->withBody(file_get_contents($fullPath), 'image/jpeg')
+              ->put($uploadUrl);
+        }
+    }
+
+    return $publishId;
+}
 
     /**
      * Direct Post Video by Public URL
