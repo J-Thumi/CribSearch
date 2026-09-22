@@ -71,7 +71,6 @@ class HouseObserver
 
         // Save model changes without re-triggering observer events
         $house->units = $updatedUnits;
-        $house->tiktok_images = array_values(array_unique($allHouseTiktokPaths));
         $house->saveQuietly();
     }
 }

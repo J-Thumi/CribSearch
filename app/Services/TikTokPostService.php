@@ -47,7 +47,7 @@ class TikTokPostService
             'description'     => $cleanDescription,
             'privacy_level'   => $privacyLevel,
             'disable_comment' => false,
-            'auto_add_music'  => false,
+            'auto_add_music'  => true,
         ],
         'source_info' => [
             'source'            => 'PULL_FROM_URL',
