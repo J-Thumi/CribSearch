@@ -15,7 +15,7 @@ class HouseObserver
      */
     public function saved(House $house): void
     {
-        // Prevent infinite event loops when updating the model inside observer
+        // Prevent infinite event loops if only tiktok_images was changed
         if ($house->isDirty('tiktok_images') && !$house->isDirty('units')) {
             return;
         }
@@ -51,13 +51,8 @@ class HouseObserver
                 Storage::disk('public')->makeDirectory('tiktok/' . $pathInfo['dirname']);
 
                 try {
-                    // Decode image using Intervention v3
                     $image = $manager->decodePath($originalFullPath);
-
-                    // Downscale to max 1080px box preserving aspect ratio
                     $image->scaleDown(width: 1080, height: 1080);
-
-                    // Convert to baseline JPEG quality 85
                     $jpegData = $image->encodeUsingFormat(Format::JPEG, quality: 85);
 
                     Storage::disk('public')->put($tiktokRelativePath, (string) $jpegData);
@@ -74,12 +69,9 @@ class HouseObserver
             $updatedUnits[] = $unit;
         }
 
-        // Save silently without re-triggering model events
-        $house->quietly(function () use ($house, $updatedUnits, $allHouseTiktokPaths) {
-            $house->update([
-                'units' => $updatedUnits,
-                'tiktok_images' => array_values(array_unique($allHouseTiktokPaths)),
-            ]);
-        });
+        // Save model changes without re-triggering observer events
+        $house->units = $updatedUnits;
+        $house->tiktok_images = array_values(array_unique($allHouseTiktokPaths));
+        $house->saveQuietly();
     }
 }
