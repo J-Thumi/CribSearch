@@ -32,7 +32,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'password',
         'is_admin',
         'terms_accepted_at',
-        'email_verified_at'
+        'email_verified_at',
+        'tiktok_open_id',
+        'tiktok_access_token',
+        'tiktok_refresh_token',
+        'tiktok_token_expires_at',
     ];
 
     /**

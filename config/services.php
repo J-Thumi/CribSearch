@@ -30,6 +30,12 @@ return [
     'graphhopper' => [
         'key' => env('GRAPHHOPPER_API_KEY'),
     ],
+    'tiktok' => [
+        'access_token' => env('TIKTOK_ACCESS_TOKEN',''),
+        'client_key' => env('TIKTOK_CLIENT_KEY',''),
+        'redirect_uri' => env('TIKTOK_REDIRECT_URI'),
+        'client_secret' => env('TIKTOK_CLIENT_SECRET',''),
+    ],
 
     'intasend' => [
         'secret_key' => env('INTASEND_SECRET_KEY'),

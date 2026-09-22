@@ -9,6 +9,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\StkPushController;
+use App\Http\Controllers\TikTokAuthController;
 use App\Models\House;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -108,3 +109,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/auth/tiktok/redirect', [TikTokAuthController::class, 'redirect'])->name('tiktok.redirect');
+    Route::get('/auth/tiktok/callback', [TikTokAuthController::class, 'callback'])->name('tiktok.callback');
+});
