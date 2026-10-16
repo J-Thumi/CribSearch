@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+@import '../../../../vendor/filament/filament/resources/css/base.css';
+
+@config 'tailwind.config.js';
+/* --- Sidebar: match the client-side dark green sidebar --- */
+.fi-sidebar {
+    background-color: #203a24;
+    border-inline-end-color: rgba(255, 255, 255, 0.1);
+}
+
+.fi-sidebar-header {
+    background-color: #203a24;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.fi-logo {
+    color: #ffffff;
+}
+
+.fi-sidebar-item-button {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.fi-sidebar-item-icon {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.fi-sidebar-item-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-button {
+    background-color: rgba(139, 195, 74, 0.2);
+    color: #ffffff;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+    color: #8bc34a;
+}
+
+.fi-sidebar-group-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* --- Sidebar typography: match client-side fonts/sizes --- */
+.fi-sidebar {
+    font-family: 'Inter', var(--font-family), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Brand/logo — matches font-heading font-semibold text-white on the client */
+.fi-logo,
+.fi-logo * {
+    font-family: 'Poppins', var(--font-family), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+}
+
+/* Nav item labels — matches text-sm on the client nav links */
+.fi-sidebar-item-button,
+.fi-sidebar-item-label {
+    font-family: 'Inter', var(--font-family), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Active nav item — matches font-semibold on the client's active state */
+.fi-sidebar-item-active .fi-sidebar-item-button,
+.fi-sidebar-item-active .fi-sidebar-item-label {
+    font-weight: 600;
+}
+
+/* Group labels (Filament auto-adds these above resource groups) */
+.fi-sidebar-group-label {
+    font-family: 'Inter', var(--font-family), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* --- Sidebar resource/nav text: fully white --- */
+.fi-sidebar-item-button,
+.fi-sidebar-item-label,
+.fi-sidebar-item-icon {
+    color: #ffffff !important;
+}
+
+.fi-sidebar-item-button:hover,
+.fi-sidebar-item-button:hover .fi-sidebar-item-label {
+    color: #ffffff !important;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-button,
+.fi-sidebar-item-active .fi-sidebar-item-label,
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+    color: #ffffff !important;
+}
